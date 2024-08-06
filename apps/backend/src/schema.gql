@@ -1,0 +1,132 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Tag {
+  id: ID
+  name: String!
+  posts: [BlogPost!]
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  author: User
+  post: BlogPost!
+}
+
+type BlogPost {
+  id: ID!
+  title: String!
+  description: String
+  slug: String
+  coverImage: String
+  socialImage: String
+  body_markdown: String
+  author: User
+  comments: [Comment!]
+  tags: [Tag!]
+  likes: Int
+  createdAt: String
+  updatedAt: String
+  visible: Boolean!
+}
+
+type Certification {
+  id: Float!
+  owner: User!
+  title: String!
+  desc: [String!]!
+  starting: String!
+  ending: String!
+  certificateLink: String!
+  skillsUsed: [String!]!
+  isActive: Boolean!
+}
+
+type Experience {
+  id: Float!
+  owner: User!
+  company: String!
+  role: String!
+  starting: String!
+  ending: String!
+  certificateLink: String
+  desc: [String!]!
+  skillsGained: [String!]!
+  isActive: Boolean!
+}
+
+type User {
+  id: ID!
+  googleId: String!
+  picture: String
+  email: String!
+  username: String
+  password: String
+  role: String!
+  blogPosts: [BlogPost!]
+  comments: [Comment!]
+  experiences: [Experience!]
+  certifications: [Certification!]
+}
+
+type RefreshTokenResponse {
+  access_token: String!
+}
+
+type BlogPostsResponse {
+  blogs: [BlogPost!]!
+  total: Int!
+}
+
+type Query {
+  getProfile: User!
+  getAllPosts(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
+  getPostById(id: Int!): BlogPost!
+}
+
+input FilterInput {
+  title: String
+  content: String
+  tags: [String!]
+}
+
+type Mutation {
+  login(email: String!, password: String!): User!
+  register(registerInput: RegisterInput!): User!
+  refreshTokens: RefreshTokenResponse!
+  createPost(createBlogPostDTO: CreateBlogPostDTO!): BlogPost!
+  updatePost(id: Int!, updateBlogPostDTO: UpdateBlogPostDTO!): BlogPost!
+  deletePost(id: Int!): Boolean!
+}
+
+input RegisterInput {
+  googleId: String!
+  email: String!
+  username: String!
+  password: String!
+}
+
+input CreateBlogPostDTO {
+  title: String!
+  description: String!
+  coverImageFile: Upload
+  socialImageFile: Upload
+  visible: Boolean = true
+  tagsInp: [String!]!
+  body_markdown: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UpdateBlogPostDTO {
+  title: String
+  description: String
+  coverImageFile: Upload
+  socialImageFile: Upload
+  body_markdown: String
+  tags: [String!]
+  visible: Boolean
+}

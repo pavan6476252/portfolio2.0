@@ -1,0 +1,42 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserEntity {
+  id: ID!
+  email: String!
+  password: String!
+  role: String!
+}
+
+type LoginResponse {
+  access_token: String!
+}
+
+type Query {
+  getUser: String!
+}
+
+type Mutation {
+  login(email: String!, password: String!): LoginResponse!
+  register(userInput: UserInput!): UserEntity!
+  logout: Boolean!
+  updateAdminPassword(username: String!, newPassword: String!): UserEntity!
+  updateUserInfo(updateUserDto: UpdateUserDto!): UserEntity!
+  updatePassword(updatePasswordDto: UpdatePasswordDto!): UserEntity!
+}
+
+input UserInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserDto {
+  email: String!
+  password: String
+}
+
+input UpdatePasswordDto {
+  oldPassword: String!
+  newPassword: String!
+}
