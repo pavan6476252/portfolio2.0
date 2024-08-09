@@ -19,6 +19,10 @@ import { Tag } from "../blogs/entities/tag.entity";
 import { Certification } from "../resume/entities/certifications.entity";
 import { Experience } from "../resume/entities/experience.entity";
 import { Project } from "../resume/entities/projects.entity";
+import { EmailModule } from "../mailer/mailer.module";
+import { ResumeProfile } from "../resume/entities/resume-profile.entity";
+import { CloudinaryModule } from "../upload/cloudinary.module";
+import { CloudinaryService } from "../upload/cloudinary.service";
 
 @Module({
   imports: [
@@ -41,7 +45,7 @@ import { Project } from "../resume/entities/projects.entity";
       type: "postgres",
       url:
         "postgresql://portfolio_owner:Hf6xvNPyX9Mw@ep-tight-mountain-a15msik3.ap-southeast-1.aws.neon.tech/portfolio?sslmode=require",
-        entities: [User,BlogPost,Comment,Tag,Certification,Experience,Project],
+        entities: [User,BlogPost,Comment,Tag,Certification,Experience,Project,ResumeProfile],
       synchronize: true,
     }),
 
@@ -55,7 +59,7 @@ import { Project } from "../resume/entities/projects.entity";
     AuthModule,
     ResumeModule,
     BlogsModule,
+    EmailModule,
   ],
-  providers: [],
 })
 export class AppModule {}

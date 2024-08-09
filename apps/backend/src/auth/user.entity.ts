@@ -4,12 +4,14 @@ import {
   CreateDateColumn,
   OneToMany,
   PrimaryGeneratedColumn,
+  OneToOne,
 } from "typeorm";
 import { ObjectType, Field, ID } from "@nestjs/graphql";
 import { BlogPost } from "../blogs/entities/blog-post.entity";
 import { Comment } from "../blogs/entities/comment.entity";
 import { Certification } from "../resume/entities/certifications.entity";
 import { Experience } from "../resume/entities/experience.entity";
+import { ResumeProfile } from "../resume/entities/resume-profile.entity";
 
 @ObjectType()
 @Entity()
@@ -44,6 +46,10 @@ export class User {
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;
+
+  @Field(() => ResumeProfile, { nullable: true })
+  @OneToOne(() => ResumeProfile, (resume) => resume.user)
+  resumeProfile?: ResumeProfile;
 
   @Field(() => [BlogPost], { nullable: true })
   @OneToMany(() => BlogPost, (post) => post.author)

@@ -11,11 +11,7 @@ import { CloudinaryService } from "../upload/cloudinary.service";
 import { TagService } from "./tag.service";
 
 @Module({
-  imports: [
-    CloudinaryModule,
-    TypeOrmModule.forFeature([BlogPost, Comment, Tag, User])
-    
-  ],
-  providers: [BlogPostResolver, BlogPostService,CloudinaryService,TagService],
+  imports: [TypeOrmModule.forFeature([BlogPost, Comment, Tag, User]),CloudinaryModule],
+  providers: [BlogPostResolver, BlogPostService, CloudinaryService, TagService],
 })
 export class BlogsModule {}

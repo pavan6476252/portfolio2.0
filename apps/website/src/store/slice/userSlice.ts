@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { gql } from "@apollo/client";
 import { useAppSelector } from "../store";
 import apiClient from "../api/apiClient";
+import { IUser } from "../dtos/user.dto";
 // Define the GraphQL query
 const GET_PROFILE_QUERY = gql`
   query GetProfile {
@@ -17,13 +18,7 @@ const GET_PROFILE_QUERY = gql`
 
 // Define the state type
 interface UserState {
-  user: {
-    id: string;
-    username: string;
-    picture?: string;
-    email: string;
-    role: string;
-  } | null;
+  user: IUser| null;
   loading: boolean;
   error: string | null;
 }

@@ -2,11 +2,13 @@ import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import authSlice from "./slice/authSlice";
 import userSlice from "./slice/userSlice";
+import homeSlice from "./slice/homeSlice";
 
 const store = configureStore({
   reducer: {
     auth:authSlice,
-    user:userSlice
+    user:userSlice,
+    home:homeSlice,
   },
 });
 export default store

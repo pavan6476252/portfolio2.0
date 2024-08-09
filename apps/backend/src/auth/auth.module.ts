@@ -11,6 +11,9 @@ import { ConfigModule } from "@nestjs/config";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { JwtStrategy } from "./jwt.stratergy";
 import { JwtAuthGuard } from "./jwt-auth.guard";
+import { CloudinaryModule } from "../upload/cloudinary.module";
+import { CloudinaryService } from "../upload/cloudinary.service";
+import { UserResolver } from "./user.resolver";
 
 @Module({
   imports: [
@@ -21,11 +24,21 @@ import { JwtAuthGuard } from "./jwt-auth.guard";
       secret: "your-jwt-secret",
       signOptions: { expiresIn: "1d" },
     }),
-    TypeOrmModule.forFeature([User,]),
+    TypeOrmModule.forFeature([User]),
     // TypeOrmModule.forFeature([BlogPost, Comment, Tag])
+    CloudinaryModule,
   ],
-  providers: [JwtAuthGuard,AuthService, UserService, GoogleStrategy, AuthResolver,JwtStrategy],
+  providers: [
+    JwtAuthGuard,
+    AuthService,
+    UserService,
+    GoogleStrategy,
+    AuthResolver,
+    UserResolver,
+    JwtStrategy,
+    CloudinaryService,
+  ],
   controllers: [AuthController],
-  exports: [AuthService,JwtAuthGuard],
+  exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

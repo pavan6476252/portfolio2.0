@@ -71,7 +71,7 @@ function BlogSection() {
       </div>
       <div className="flex pl-14 gap-8 overflow-x-scroll no-scrollbar  ">
         {blogs.map((blog, idx) => (
-          <CardLayout className="min-w-[400px] text-white w-[400px] aspect-[8/9]  border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ">
+          <CardLayout key={blog.title} className="min-w-[400px] text-white w-[400px] aspect-[8/9]  border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ">
             <img
               src={blog.image}
               alt={blog.title}

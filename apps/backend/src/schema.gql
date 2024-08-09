@@ -57,6 +57,38 @@ type Experience {
   isActive: Boolean!
 }
 
+type ResumeProfile {
+  id: Int
+  user: User
+  fullName: String
+  tagline: String
+  description: String
+  heroTitle: String
+  heroDescription: String
+  socialPlatforms: [SocialPlatform!]
+  domains: [String!]
+  collegeName: String
+  graduationYear: Int
+  developerTools: [Skill!]
+  abilities: [Abilities!]
+}
+
+type Abilities {
+  type: String!
+  title: String!
+  description: String!
+}
+
+type Skill {
+  type: String!
+  name: String!
+}
+
+type SocialPlatform {
+  link: String!
+  name: String!
+}
+
 type User {
   id: ID!
   googleId: String!
@@ -65,6 +97,7 @@ type User {
   username: String
   password: String
   role: String!
+  resumeProfile: ResumeProfile
   blogPosts: [BlogPost!]
   comments: [Comment!]
   experiences: [Experience!]
@@ -80,8 +113,27 @@ type BlogPostsResponse {
   total: Int!
 }
 
+type Education {
+  id: Int!
+  type: String!
+  universityName: String
+  fieldOfStudy: String
+  degree: String
+  grade: Float
+  schoolName: String
+  class: String
+  startYear: Float!
+  endYear: Float
+  finalGPA: Float
+}
+
 type Query {
   getProfile: User!
+  resumeProfiles: [ResumeProfile!]!
+  currentResumeProfile: ResumeProfile!
+  resumeProfile: ResumeProfile!
+  educations: [Education!]!
+  education(id: Int!): Education!
   getAllPosts(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
   getPostById(id: Int!): BlogPost!
 }
@@ -96,9 +148,17 @@ type Mutation {
   login(email: String!, password: String!): User!
   register(registerInput: RegisterInput!): User!
   refreshTokens: RefreshTokenResponse!
+  updateUser(userUpdateInput: UserUpdateInputDTO!): User!
+  createResumeProfile(createResumeProfileDto: CreateResumeProfileDto!): ResumeProfile!
+  updateResumeProfile(updateResumeProfileDto: UpdateResumeProfileDto!): Boolean!
+  removeResumeProfile: Boolean!
+  createEducation(createEducationDto: CreateEducationDto!): Education!
+  updateEducation(id: Int!, updateEducationDto: UpdateEducationDto!): Education!
+  removeEducation(id: Int!): Boolean!
   createPost(createBlogPostDTO: CreateBlogPostDTO!): BlogPost!
   updatePost(id: Int!, updateBlogPostDTO: UpdateBlogPostDTO!): BlogPost!
   deletePost(id: Int!): Boolean!
+  sendEmail(emailInput: MailInput!): Boolean!
 }
 
 input RegisterInput {
@@ -106,6 +166,83 @@ input RegisterInput {
   email: String!
   username: String!
   password: String!
+}
+
+input UserUpdateInputDTO {
+  profileFile: Upload
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input CreateResumeProfileDto {
+  fullName: String!
+  tagline: String
+  description: String
+  heroTitle: String
+  heroDescription: String
+  socialPlatforms: [SocialPlatformInput!]
+  domains: [String!]
+  collegeName: String
+  graduationYear: Int
+  developerTools: [SkillInput!]
+  abilities: [AbilitiesInput!]
+}
+
+input SocialPlatformInput {
+  link: String!
+  name: String!
+}
+
+input SkillInput {
+  type: String!
+  name: String!
+}
+
+input AbilitiesInput {
+  type: String!
+  title: String!
+  description: String!
+}
+
+input UpdateResumeProfileDto {
+  fullName: String
+  tagline: String
+  description: String
+  heroTitle: String
+  heroDescription: String
+  socialPlatforms: [SocialPlatformInput!]
+  domains: [String!]
+  collegeName: String
+  graduationYear: Int
+  developerTools: [SkillInput!]
+  abilities: [AbilitiesInput!]
+}
+
+input CreateEducationDto {
+  type: String!
+  universityName: String
+  fieldOfStudy: String
+  degree: String
+  grade: Float
+  schoolName: String
+  class: String
+  startYear: Int!
+  endYear: Int
+  finalGPA: Float
+}
+
+input UpdateEducationDto {
+  type: String
+  universityName: String
+  fieldOfStudy: String
+  degree: String
+  grade: Float
+  schoolName: String
+  class: String
+  startYear: Int
+  endYear: Int
+  finalGPA: Float
 }
 
 input CreateBlogPostDTO {
@@ -118,9 +255,6 @@ input CreateBlogPostDTO {
   body_markdown: String!
 }
 
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
-
 input UpdateBlogPostDTO {
   title: String
   description: String
@@ -129,4 +263,10 @@ input UpdateBlogPostDTO {
   body_markdown: String
   tags: [String!]
   visible: Boolean
+}
+
+input MailInput {
+  to: String!
+  subject: String!
+  html: String!
 }
