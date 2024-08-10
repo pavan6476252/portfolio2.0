@@ -81,7 +81,7 @@ const AnimatedProfilePicComponent: React.FC<Props> = ({ profilePic }) => {
   };
 
   return (
-    <div className="relative max-w-sm flex items-center justify-center">
+    <div className="relative  flex items-center justify-center">
       {editMode && (
         <>
           <FaCamera

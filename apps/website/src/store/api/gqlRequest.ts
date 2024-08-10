@@ -7,7 +7,7 @@ interface IOperations {
   };
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
   public statusCode: number;
   public errors: any;
 
@@ -19,7 +19,7 @@ class ApiError extends Error {
   }
 }
 
-const graphQLMultipartRequest = async (
+export const graphQLMultipartRequest = async <T>(
   operations: IOperations,
   files: File[]
 ) => {
@@ -45,7 +45,11 @@ const graphQLMultipartRequest = async (
         "apollo-require-preflight": "true",
       },
     };
-    const response = await apiClient.post("/graphql", formData, requestConfig);
+    const response = await apiClient.post<GraphQLResponse<T>>(
+      "/graphql",
+      formData,
+      requestConfig
+    );
 
     if (response.data.errors) {
       throw new ApiError(
@@ -77,4 +81,54 @@ const graphQLMultipartRequest = async (
   }
 };
 
-export default graphQLMultipartRequest;
+ 
+export const graphQlRequest = async <T>(
+  url: string,
+  data?: { query: string | undefined; variables?: any }
+): Promise<T> => {
+  try {
+    const response = await apiClient.post<GraphQLResponse<T>>(url, data);
+
+    if (response.data.errors) {
+      throw new ApiError(
+        "GraphQL errors occurred",
+        response.status,
+        response.data.errors
+      );
+    }
+    console.log(`[LOG] REQUEST SUCCESS`);
+
+    return response.data.data as T;
+  } catch (e) {
+    const error = e as AxiosError;
+    console.error("API request failed", error);
+
+    if (error.response) {
+      const res = error.response as any;
+      throw new ApiError(
+        res.data?.message || "An unexpected error occurred",
+        error.response.status,
+        res.data.errors || null
+      );
+    } else if (error.request) {
+      throw new ApiError(
+        "Network error: The request was made but no response was received",
+        0
+      );
+    } else {
+      throw new ApiError(error.message || "An unexpected error occurred");
+    }
+  }
+};
+
+interface GraphQLError {
+  message: string;
+  locations?: Array<{ line: number; column: number }>;
+  path?: string[];
+  extensions?: Record<string, any>;
+}
+
+export interface GraphQLResponse<T> {
+  data?: T;
+  errors?: GraphQLError[];
+}

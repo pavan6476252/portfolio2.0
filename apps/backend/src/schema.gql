@@ -37,10 +37,10 @@ type Certification {
   owner: User!
   title: String!
   desc: [String!]!
-  starting: String!
-  ending: String!
+  starting: Date!
+  ending: Date!
   certificateLink: String!
-  skillsUsed: [String!]!
+  skillsGained: [String!]!
   isActive: Boolean!
 }
 
@@ -89,6 +89,35 @@ type SocialPlatform {
   name: String!
 }
 
+type Project {
+  id: Float!
+  author: User!
+  bannerImg: String
+  title: String!
+  projectLink: String!
+  startDate: Date
+  endDate: Date
+  techStack: [String!]!
+  keypoints: String!
+  desc: String!
+  isActive: Boolean!
+}
+
+type Education {
+  id: Int!
+  user: User!
+  type: String!
+  universityName: String
+  fieldOfStudy: String
+  degree: String
+  grade: Float
+  schoolName: String
+  class: String
+  startYear: Float!
+  endYear: Float
+  finalGPA: Float
+}
+
 type User {
   id: ID!
   googleId: String!
@@ -97,6 +126,8 @@ type User {
   username: String
   password: String
   role: String!
+  education: Education!
+  projects: Project!
   resumeProfile: ResumeProfile
   blogPosts: [BlogPost!]
   comments: [Comment!]
@@ -113,27 +144,20 @@ type BlogPostsResponse {
   total: Int!
 }
 
-type Education {
-  id: Int!
-  type: String!
-  universityName: String
-  fieldOfStudy: String
-  degree: String
-  grade: Float
-  schoolName: String
-  class: String
-  startYear: Float!
-  endYear: Float
-  finalGPA: Float
-}
+"""Date custom scalar type"""
+scalar Date
 
 type Query {
   getProfile: User!
   resumeProfiles: [ResumeProfile!]!
   currentResumeProfile: ResumeProfile!
   resumeProfile: ResumeProfile!
+  getAllProjects: [Project!]!
+  getMyProjects: [Project!]!
+  getProjectById(id: Float!): Project!
   educations: [Education!]!
   education(id: Int!): Education!
+  myEducations(id: Int!): [Education!]!
   getAllPosts(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
   getPostById(id: Int!): BlogPost!
 }
@@ -152,6 +176,9 @@ type Mutation {
   createResumeProfile(createResumeProfileDto: CreateResumeProfileDto!): ResumeProfile!
   updateResumeProfile(updateResumeProfileDto: UpdateResumeProfileDto!): Boolean!
   removeResumeProfile: Boolean!
+  createProject(createProjectDto: CreateProjectDto!): Project!
+  updateProject(id: Float!, updateProjectDto: UpdateProjectDto!): Project!
+  deleteProject(id: Float!): Boolean!
   createEducation(createEducationDto: CreateEducationDto!): Education!
   updateEducation(id: Int!, updateEducationDto: UpdateEducationDto!): Education!
   removeEducation(id: Int!): Boolean!
@@ -219,6 +246,30 @@ input UpdateResumeProfileDto {
   abilities: [AbilitiesInput!]
 }
 
+input CreateProjectDto {
+  title: String!
+  projectLink: String
+  bannerImgFile: Upload
+  startDate: Date!
+  endDate: Date!
+  techStack: [String!]!
+  desc: String!
+  keypoints: String!
+  isActive: Boolean! = true
+}
+
+input UpdateProjectDto {
+  title: String
+  projectLink: String
+  bannerImgFile: Upload
+  startDate: Date
+  endDate: Date
+  techStack: [String!]
+  desc: String
+  keypoints: String
+  isActive: Boolean = true
+}
+
 input CreateEducationDto {
   type: String!
   universityName: String
@@ -250,9 +301,9 @@ input CreateBlogPostDTO {
   description: String!
   coverImageFile: Upload
   socialImageFile: Upload
-  visible: Boolean = true
-  tagsInp: [String!]!
   body_markdown: String!
+  tags: [String!]!
+  visible: Boolean = true
 }
 
 input UpdateBlogPostDTO {
@@ -262,7 +313,7 @@ input UpdateBlogPostDTO {
   socialImageFile: Upload
   body_markdown: String
   tags: [String!]
-  visible: Boolean
+  visible: Boolean = true
 }
 
 input MailInput {

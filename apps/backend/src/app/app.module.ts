@@ -16,13 +16,16 @@ import { ResumeModule } from "../resume/resume.module";
 import { BlogPost } from "../blogs/entities/blog-post.entity";
 import { Comment } from "../blogs/entities/comment.entity";
 import { Tag } from "../blogs/entities/tag.entity";
-import { Certification } from "../resume/entities/certifications.entity";
-import { Experience } from "../resume/entities/experience.entity";
-import { Project } from "../resume/entities/projects.entity";
+import { Certification } from "../resume/certifications/entity/certifications.entity";
+import { Experience } from "../resume/experience/entities/experience.entity"; 
+import { Project } from "../resume/projects/entities/projects.entity";
 import { EmailModule } from "../mailer/mailer.module";
 import { ResumeProfile } from "../resume/entities/resume-profile.entity";
 import { CloudinaryModule } from "../upload/cloudinary.module";
 import { CloudinaryService } from "../upload/cloudinary.service";
+import GraphQLJSON from "graphql-type-json";
+import { DateScalar } from "../common/date.scalar"; 
+import { Education } from "../resume/education/entities/education.entity";
 
 @Module({
   imports: [
@@ -40,20 +43,28 @@ import { CloudinaryService } from "../upload/cloudinary.service";
     //   logging: "all",
     //   entities: [User,BlogPost,Comment,Tag],
     // }),
-   
+
     TypeOrmModule.forRoot({
       type: "postgres",
       url:
         "postgresql://portfolio_owner:Hf6xvNPyX9Mw@ep-tight-mountain-a15msik3.ap-southeast-1.aws.neon.tech/portfolio?sslmode=require",
-        entities: [User,BlogPost,Comment,Tag,Certification,Experience,Project,ResumeProfile],
+      entities: [
+        User,
+        BlogPost,
+        Comment,
+        Tag,
+        Certification,
+        Experience,
+        Project,
+        ResumeProfile,
+        Education
+      ],
       synchronize: true,
     }),
 
-    
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       context: ({ req, res }) => ({ req, res }),
-        
       autoSchemaFile: join(process.cwd(), "apps/backend/src/schema.gql"),
     }),
     AuthModule,
@@ -61,5 +72,6 @@ import { CloudinaryService } from "../upload/cloudinary.service";
     BlogsModule,
     EmailModule,
   ],
+  providers:[DateScalar]
 })
 export class AppModule {}

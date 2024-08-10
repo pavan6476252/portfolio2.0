@@ -18,11 +18,12 @@ import SocialPlatformsEdit from "../components/social-platforms.edit";
 import EditSocialPlatformsComponent from "../components/social-platforms.edit";
 import { getIconByName } from "../../utils/social-icons.mapper";
 import AnimatedProfilePicComponent from "../components/animated-profilepick.component";
+import HeroSectionContentCmoponent from "../components/hero-section-content.component";
+import HeroSectionSocialIconsComponent from "../components/hero-section-social-icon.component";
 interface Props {}
 
 const HeroSection: React.FC<Props> = () => {
   const resumeState = useAppSelector((state) => state.home);
-  const {editMode,setEditMode} = useContext(EditContext);
   if (
     !resumeState.resume ||
     resumeState.loading ||
@@ -33,25 +34,10 @@ const HeroSection: React.FC<Props> = () => {
     return null;
   }
 
-  const { user, fullName, tagline, description } = resumeState.resume;
-
-  const [initialValue, setNewDescription] = useState(``);
-  const [newName, setNewName] = useState(``);
-  const [newTagLine, setNewTagLine] = useState(``);
-  const [showForm, setShowForm] = useState(false);
-  const [socialIconsVisibility, setSocialIconsVisibility] = useState(false);
+  const { user } = resumeState.resume;
 
   return (
     <>
-      <ContactUsFormComponent
-        visibility={showForm}
-        email={user.email}
-        toggleFormVisibility={() => setShowForm((s) => !s)}
-      />
-      <EditSocialPlatformsComponent
-        visibility={socialIconsVisibility}
-        togglSocialIconsVisibility={() => setSocialIconsVisibility((s) => !s)}
-      />
       <br />
       <br />
       <motion.div
@@ -62,12 +48,12 @@ const HeroSection: React.FC<Props> = () => {
       >
         {/* Profile Picture */}
         <motion.div
-          className="col-span-1 max-w-sm mx-auto sm:col-span-3 sm:order-2 md:max-w-3xl lg:col-span-4 lg:order-3 "
+          className="col-span-1 max-w-sm  mx-auto sm:col-span-3 sm:order-2   lg:col-span-4 lg:order-3 "
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
         >
-        <AnimatedProfilePicComponent profilePic={user.picture}/>
+          <AnimatedProfilePicComponent profilePic={user.picture} />
         </motion.div>
 
         {/* Social Icons */}
@@ -77,15 +63,7 @@ const HeroSection: React.FC<Props> = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
         >
-        {
-          resumeState.resume.socialPlatforms.map((platform)=>{
-            const Icon = getIconByName(platform.name);
-            return <Icon/>
-          })
-        }
-          {
-            editMode&& <TbEditCircle   onClick={()=>setSocialIconsVisibility(true)}          className="text-indigo-500"/>
-          }
+          <HeroSectionSocialIconsComponent />
         </motion.div>
 
         {/* Content */}
@@ -95,41 +73,7 @@ const HeroSection: React.FC<Props> = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
         >
-          <EditableWrapper
-            className="font-bold text-4xl w-full md:text-5xl lg:text-6xl text-white"
-            initialValue={fullName}
-            onChange={(newVal) => setNewName(newVal)}
-          >
-            <h1>{fullName}</h1>
-          </EditableWrapper>
-          <div className="flex items-center gap-4 w-full flex-nowrap lg:mb-4">
-            <span className="w-full h-1 bg-[#4f46e5]"></span>
-            <EditableWrapper
-              className="inline text-nowrap text-white font-semibold"
-              initialValue={tagline}
-              onChange={(newVal) => setNewTagLine(newVal)}
-            >
-              <span>{tagline}</span>
-            </EditableWrapper>
-          </div>
-          <EditableWrapper
-            className="text-lg w-full   md:text-xl text-slate-300"
-            initialValue={description}
-            onChange={(newVal) => setNewDescription(newVal)}
-          >
-            <p>{description}</p>
-          </EditableWrapper>
-          <br />
-          <button
-            className="relative inline-block font-medium group py-3 px-8"
-            onClick={() => setShowForm(true)}
-          >
-            <span className="absolute inset-0 w-full h-full transition duration-400 ease-out transform translate-x-1 translate-y-1 bg-indigo-600 group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
-            <span className="absolute inset-0 w-full h-full bg-white border border-indigo-600 group-hover:bg-indigo-50"></span>
-            <span className="relative text-indigo-600 flex gap-4 items-center">
-              Say Hello <FaShareAlt />
-            </span>
-          </button>
+          <HeroSectionContentCmoponent />
         </motion.div>
       </motion.div>
     </>

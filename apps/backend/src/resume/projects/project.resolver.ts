@@ -1,9 +1,12 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { ProjectService } from './project.service';
-import { Project } from '../entities/projects.entity';
-import { UpdateProjectDto } from '../dto/update-project.dto';
-import { CreateProjectDto } from '../dto/create-project.dto';
- 
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { ProjectService } from "./project.service";
+import { Project } from "./entities/projects.entity";
+import { UpdateProjectDto } from "./dto/update-project.dto";
+import { CreateProjectDto } from "./dto/create-project.dto";
+import { UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
+import { ITokenPayload } from "../../auth/auth.service";
+
 @Resolver(() => Project)
 export class ProjectResolver {
   constructor(private readonly projectService: ProjectService) {}
@@ -13,26 +16,49 @@ export class ProjectResolver {
     return this.projectService.getAllProjects();
   }
 
+  @Query(() => [Project])
+  @UseGuards(JwtAuthGuard)
+  getMyProjects(@Context("req") req: any): Promise<Project[]> {
+    const { sub } = req.user as ITokenPayload;
+    return this.projectService.getMyProjects(sub);
+  }
+
   @Query(() => Project)
-  getProjectById(@Args('id', { type: () => Number }) id: number): Promise<Project> {
+  getProjectById(
+    @Args("id", { type: () => Number }) id: number
+  ): Promise<Project> {
     return this.projectService.getProjectById(id);
   }
 
   @Mutation(() => Project)
-  createProject(@Args('createProjectDto') createProjectDto: CreateProjectDto): Promise<Project> {
-    return this.projectService.createProject(createProjectDto);
+  @UseGuards(JwtAuthGuard)
+  createProject(
+    @Context("req") req: any,
+    @Args("createProjectDto") createProjectDto: CreateProjectDto
+  ): Promise<Project> {
+    const { sub } = req.user as ITokenPayload;
+    return this.projectService.createProject(sub, createProjectDto);
   }
 
   @Mutation(() => Project)
+  @UseGuards(JwtAuthGuard)
   updateProject(
-    @Args('id', { type: () => Number }) id: number,
-    @Args('updateProjectDto') updateProjectDto: UpdateProjectDto,
+    @Context("req") req: any,
+    @Args("id", { type: () => Number }) id: number,
+    @Args("updateProjectDto") updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
-    return this.projectService.updateProject(id, updateProjectDto);
+    const { sub } = req.user as ITokenPayload;
+  
+    return this.projectService.updateProject(sub,id, updateProjectDto);
   }
 
   @Mutation(() => Boolean)
-  deleteProject(@Args('id', { type: () => Number }) id: number): Promise<boolean> {
-    return this.projectService.deleteProject(id).then(() => true);
+  @UseGuards(JwtAuthGuard)
+  async deleteProject(
+    @Context("req") req: any,
+    @Args("id", { type: () => Number }) id: number
+  ): Promise<boolean> {
+    const { sub } = req.user as ITokenPayload;
+    return this.projectService.deleteProject(sub, id).then(() => true);
   }
 }

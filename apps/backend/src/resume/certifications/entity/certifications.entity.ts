@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "../../auth/user.entity";
+import { User } from "../../../auth/user.entity";
 
 @Entity()
 @ObjectType()
@@ -21,13 +21,13 @@ export class Certification {
   @Column("text", { array: true })
   desc: string[];
 
-  @Field()
+  @Field(type=>Date)
   @Column("date")
-  starting: string;
-
-  @Field()
+  starting: Date;
+  
+  @Field(type=>Date)
   @Column("date")
-  ending: string;
+  ending: Date;
 
   @Field()
   @Column()
@@ -35,9 +35,9 @@ export class Certification {
 
   @Field(() => [String])
   @Column("text", { array: true })
-  skillsUsed: string[];
+  skillsGained: string[];
 
   @Field((type) => Boolean, { defaultValue: true })
   @Column("boolean", { default: true })
-  isActive: Boolean;
+  isActive: boolean;
 }

@@ -5,6 +5,8 @@ interface EditableWrapperProps {
   children: ReactNode;
   onChange: (newValue: string) => void;
   initialValue: string;
+  isEditable: boolean;
+  maxRows?:number;
   className: string;
 }
 
@@ -12,6 +14,8 @@ const EditableWrapper: React.FC<EditableWrapperProps> = ({
   className,
   children,
   initialValue,
+  isEditable,
+  maxRows,
   onChange,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -20,8 +24,8 @@ const EditableWrapper: React.FC<EditableWrapperProps> = ({
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; 
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; 
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [value, isEditing]);
 
@@ -31,9 +35,10 @@ const EditableWrapper: React.FC<EditableWrapperProps> = ({
   };
 
   return (
-    <div className="w-full ">
-      {isEditing ? (
+    <>
+      {isEditing && isEditable ? (
         <textarea
+        rows={maxRows}
           ref={textareaRef}
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -43,7 +48,10 @@ const EditableWrapper: React.FC<EditableWrapperProps> = ({
               setIsEditing(false);
             }
           }}
-          className={cn(` w-full appearance-none resize-none focus:bg-transparent `,className)}
+          className={cn(
+            ` w-full appearance-none resize-none focus:bg-transparent `,
+            className
+          )}
           autoFocus
         />
       ) : (
@@ -51,7 +59,7 @@ const EditableWrapper: React.FC<EditableWrapperProps> = ({
           {children}
         </span>
       )}
-    </div>
+    </>
   );
 };
 

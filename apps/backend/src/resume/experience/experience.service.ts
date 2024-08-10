@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm'; 
-import { Experience } from '../entities/experience.entity';
-import { CreateExperienceDTO } from '../dto/create-experience.dto';
-import { UpdateExperienceDTO } from '../dto/update-experience.dto';
+import { Experience } from './entities/experience.entity'; 
+import { CreateExperienceDTO } from './dto/create-experience.dto';
+import { UpdateExperienceDTO } from './dto/update-experience.dto'; 
 @Injectable()
 export class ExperiencesService {
   constructor(

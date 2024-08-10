@@ -56,7 +56,10 @@ export class BlogPostResolver {
 
   @Mutation(() => Boolean)
   @UseGuards(JwtAdminOnlyAuthGuard)
-  async deletePost(@Args("id", { type: () => Int }) id: number) {
-    return this.blogPostService.remove(id);
+  async deletePost(
+    @Context("req") req: any,
+    @Args("id", { type: () => Int }) id: number) {
+      const user = req.user as ITokenPayload;
+    return this.blogPostService.remove(user.sub,id);
   }
 }

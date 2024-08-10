@@ -1,4 +1,3 @@
-// create-education.dto.ts
 import { InputType, Field, Float, Int } from '@nestjs/graphql';
 import { IsString, IsOptional, IsNumber, Max, Min } from 'class-validator';
 

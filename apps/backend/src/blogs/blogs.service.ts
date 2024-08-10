@@ -70,7 +70,7 @@ export class BlogPostService {
   ): Promise<BlogPost> {
     const {
       title,
-      tagsInp,
+      tags,
       coverImageFile,
       socialImageFile,
       ...postDetails
@@ -82,7 +82,7 @@ export class BlogPostService {
     }
 
     const tagEntities = await Promise.all(
-      tagsInp.map(
+      tags.map(
         async (tagName) => await this.tagService.preloadOrCreateTag(tagName)
       )
     );
@@ -200,8 +200,14 @@ export class BlogPostService {
     return this.blogPostRepository.save(post);
   }
 
-  async remove(id: number): Promise<boolean> {
-    const blog = await this.blogPostRepository.findOne({ where: { id } });
+  async remove(userId: number, id: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User not found with ${userId}`);
+    }
+    const blog = await this.blogPostRepository.findOne({
+      where: { id: id, author: user },
+    });
     const deleteImagePromises = [];
 
     if (blog.socialImage) {

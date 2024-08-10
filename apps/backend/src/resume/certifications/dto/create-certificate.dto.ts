@@ -1,4 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
+import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
 
 @InputType()
 export class CreateCertificationDTO {
@@ -14,9 +15,12 @@ export class CreateCertificationDTO {
   @Field()
   ending: string;
 
-  @Field()
-  certificateLink: string;
+  @Field((type) => GraphQLUpload, { nullable: true })
+  certificateFile?: FileUpload;
 
   @Field(() => [String])
-  skillsUsed: string[];
+  skillsGained: string[];
+
+  @Field(() => Boolean)
+  isActive: boolean;
 }

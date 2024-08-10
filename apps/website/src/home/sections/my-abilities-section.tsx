@@ -1,58 +1,69 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import mobileAppLogo from "../../assets/logos/app-development-removebg-preview.png";
 import backendLogo from "../../assets/logos/34877848-removebg-preview.png";
 import devopsLogo from "../../assets/logos/devops-2.svg";
+import defaultLogo from "../../assets/logos/PavanKumarLogo.svg";
 import CardLayout from "../../components/card-layout";
-import { title } from "process";
 import SpeadedRadialGradient from "../../components/animation/spreaded-radial-gradient";
+import { useAppSelector } from "../../store/store";
+import EditContext from "../../context/edit-context";
+import PopupComponent from "../../components/popup-component";
+import EditAbilitiesComponent, { getLogoPathFromType } from "../components/abilities.edit";
+
 function MyAbilitiesSection() {
-  const data = [
-    {
-      logo: backendLogo,
-      title: "Web Developer",
-      desc:
-        "Building responsive and interactive web applications using modern frameworks and technologies.",
-    },
-    {
-      logo: backendLogo,
-      title: "Backend Developer",
-      desc:
-        "Designing and implementing scalable and reliable backend systems to support web and mobile applications.",
-    },
-    {
-      logo: mobileAppLogo,
-      title: "Mobile App Developer",
-      desc:
-        "Creating user-friendly and performant mobile applications for both Android and iOS platforms.",
-    },
-    {
-      logo: devopsLogo,
-      title: "DevOps",
-      desc:
-        "Ensuring seamless integration and delivery through automation, monitoring, and efficient infrastructure management.",
-    },
-  ];
+  const resumeState = useAppSelector((state) => state.home);
+  const { editMode } = useContext(EditContext);
+
+  const [visibility, setVisibility] = useState(false);
+  const togglePopupPanelVisibility = () => {
+    setVisibility((s) => !s);
+  };
+
+  if (!resumeState.resume || resumeState.loading) {
+    return null;
+  }
+
+  const abilities = resumeState.resume.abilities || [];
+
   return (
-    <div className="group relative container mx-auto  grid gap-5  grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-     
-      <SpeadedRadialGradient className="left-0 right-0 w-0 h-0 top-0 bottom-0 group-hover:w-[50%] group-hover:h-[60vh] aspect-square   " />
-
-      {data.map((data, idx) => (
-        <CardLayout
-          className={` relative group/${idx} flex flex-col justify-between gap-6`}
-        >
-        
-          <SpeadedRadialGradient />
-
-          <img src={data.logo} alt="" className="w-1/2" />
-          <div>
-            <h2 className="font-bold text-slate-100 text-2xl">{data.title}</h2>
-            <br />
-            <p className="font-thin text-slate-200">{data.desc}</p>
-          </div>
-        </CardLayout>
-      ))}
-    </div>
+    <>
+      {editMode && (
+        <div className="flex justify-end container mx-auto mb-5">
+          <button
+            className="relative inline-block font-medium group py-3 px-8"
+            onClick={togglePopupPanelVisibility}
+          >
+            <span className="absolute inset-0 w-full h-full transition duration-400 ease-out transform translate-x-1 translate-y-1 bg-red-600 group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
+            <span className="absolute inset-0 w-full h-full bg-white border border-red-600 group-hover:bg-indigo-50"></span>
+            <span className="relative flex gap-4 items-center">Edit</span>
+          </button>
+        </div>
+      )}
+      <div className="group relative container mx-auto  grid gap-5  grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <EditAbilitiesComponent toggleSocialIconsVisibility={togglePopupPanelVisibility}  visibility={visibility}/>
+        <SpeadedRadialGradient className="left-0 right-0 w-0 h-0 top-0 bottom-0 group-hover:w-[50%] group-hover:h-[60vh] aspect-square" />
+        {abilities.map((data, idx) => (
+          <CardLayout
+            key={idx}
+            className={`relative group/${idx} flex flex-col justify-between gap-6`}
+          >
+            <SpeadedRadialGradient />
+            <img
+              src={getLogoPathFromType(data.type)}
+              alt=""
+              className="w-1/2"
+            />
+            <div>
+              <h2 className="font-bold text-slate-100 text-2xl">
+                {data.title}
+              </h2>
+              <br />
+              <p className="font-thin text-slate-200">{data.description}</p>
+            </div>
+          </CardLayout>
+        ))}
+      </div>
+    </>
   );
 }
 

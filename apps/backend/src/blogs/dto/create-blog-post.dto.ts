@@ -4,7 +4,7 @@ import { Tag } from "../entities/tag.entity";
 import { GraphQLUpload, FileUpload } from "graphql-upload-ts";
 
 @InputType()
-export class CreateBlogPostDTO  {
+export class CreateBlogPostDTO {
   @Field()
   title: string;
   @Field()
@@ -12,16 +12,16 @@ export class CreateBlogPostDTO  {
 
   @Field(() => GraphQLUpload, { nullable: true })
   coverImageFile?: FileUpload;
-  
+
   @Field(() => GraphQLUpload, { nullable: true })
   socialImageFile: FileUpload;
 
-  @Field({ defaultValue: true, nullable: true })
-  visible: boolean;
-
-  @Field(() => [String])
-  tagsInp: string[];
-
   @Field()
   body_markdown: string;
+
+  @Field(() => [String])
+  tags: string[];
+
+  @Field({ defaultValue: true, nullable: true })
+  visible: boolean;
 }

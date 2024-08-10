@@ -9,9 +9,11 @@ import {
 import { ObjectType, Field, ID } from "@nestjs/graphql";
 import { BlogPost } from "../blogs/entities/blog-post.entity";
 import { Comment } from "../blogs/entities/comment.entity";
-import { Certification } from "../resume/entities/certifications.entity";
-import { Experience } from "../resume/entities/experience.entity";
+import { Certification } from "../resume/certifications/entity/certifications.entity";
+import { Experience } from "../resume/experience/entities/experience.entity"; 
 import { ResumeProfile } from "../resume/entities/resume-profile.entity";
+import { Project } from "../resume/projects/entities/projects.entity";
+import { Education } from "../resume/education/entities/education.entity";
 
 @ObjectType()
 @Entity()
@@ -46,6 +48,14 @@ export class User {
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;
+
+  @Field(() => Education)
+  @OneToMany(() => Education, (edu) => edu.user)
+  education?: Education;
+  
+  @Field(() => Project)
+  @OneToMany(() => Project, (project) => project.author)
+  projects?: Project;
 
   @Field(() => ResumeProfile, { nullable: true })
   @OneToOne(() => ResumeProfile, (resume) => resume.user)

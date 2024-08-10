@@ -5,14 +5,15 @@ export interface ISocialPlatform {
   name: string;
 }
 
-interface ISkill {
+export interface ISkill {
   name: string;
   type: string;
 }
 
-interface IAbility {
+export interface IAbility {
   type: string;
   title: string;
+  description:string
 }
 
 export interface IResumeProfile {

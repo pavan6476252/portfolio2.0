@@ -58,10 +58,10 @@ function NavBar() {
                 </li>
                 {user.role == "admin" && (
                   <button
-                    className={`flex gap-2 items-center px-4 py-2 rounded-md shadow-md transition duration-300 ${
+                    className={`flex gap-2 items-center px-2 py-2  shadow-md transition duration-300 ${
                       editMode
                         ? "bg-red-600 hover:bg-red-700"
-                        : "bg-indigo-500 hover:bg-indigo-700"
+                        : "bg-[#b0acf6] hover:bg-indigo-700"
                     } text-white`}
                     onClick={toggleEditMode}
                   >

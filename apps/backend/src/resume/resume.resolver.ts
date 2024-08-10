@@ -31,7 +31,7 @@ export class ResumeProfileResolver {
   getPortfolio() {
     return this.resumeProfileService.getcurrentPortfolio();
   }
-  
+
   @Query(() => ResumeProfile, { name: "resumeProfile" })
   @UseGuards(JwtAdminOnlyAuthGuard)
   findOne(@Context("req") req: any) {
@@ -53,9 +53,9 @@ export class ResumeProfileResolver {
 
   @Mutation(() => Boolean)
   @UseGuards(JwtAdminOnlyAuthGuard)
-  removeResumeProfile(@Context("req") req: any) {
+  async removeResumeProfile(@Context("req") req: any) {
     const user = req.user as ITokenPayload;
-    this.resumeProfileService.remove(user.sub);
-    return true;
+   return  this.resumeProfileService.remove(user.sub).then(()=>true);
+    
   }
 }

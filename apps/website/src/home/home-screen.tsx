@@ -38,7 +38,21 @@ function HomeScreen() {
   }
   return (
     <EditContext.Provider value={{ editMode, setEditMode }}>
-      {resumeState.error?.status === 404 && (
+      {resumeState.error?.statusCode === 500 && (
+        <NotificationBar className=" flex justify-between text-lg items-center">
+          <div>
+            <h1 className="font-semibold text-black">
+              Oops! Internal Server Error{" "}
+            </h1>
+            <p className="text-slate-700">Please try agian later</p>
+          </div>
+          <button className="flex gap-2 border-red-200 border-2 rounded px-3 py-1">
+            <span className="text-slate-700">Report</span>
+            <CiWarning size={30} className="text-red-500" />
+          </button>
+        </NotificationBar>
+      )}
+      {resumeState.error?.statusCode === 404 && (
         <NotificationBar className=" flex justify-between text-lg items-center">
           <div>
             <h1 className="font-semibold text-black">
@@ -49,11 +63,13 @@ function HomeScreen() {
               re-login again
             </p>
           </div>
+          
           <CiWarning size={30} className="text-yellow-500" />
+         
         </NotificationBar>
-      ) }
-      
-       {resumeState.error?.isAxiosError && (
+      )}
+
+      {resumeState.error?.errors && (
         <NotificationBar className=" flex justify-between text-lg items-center">
           <div>
             <h1 className="font-semibold text-black">Unknown error</h1>
@@ -74,16 +90,14 @@ function HomeScreen() {
             <HeroSection />
             <IntroSection />
             <br />
-            <br />
-            <br />
-            <br />
+            <br /> 
             <MyAbilitiesSection />
             <br />
             <br />
             <TechnologiesSection />
             <br />
             <br />
-            <br />
+            
             <ProjectsSection />
             <BlogsSection />
             <MakeItYoursComponent />

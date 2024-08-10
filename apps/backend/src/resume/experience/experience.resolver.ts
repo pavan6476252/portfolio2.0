@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { Experience } from "../entities/experience.entity";
-import { CreateExperienceDTO } from "../dto/create-experience.dto";
-import { UpdateExperienceDTO } from "../dto/update-experience.dto";
+import { Experience } from "./entities/experience.entity"; 
+import { CreateExperienceDTO } from "./dto/create-experience.dto";
+import { UpdateExperienceDTO } from "./dto/update-experience.dto";
 import { ExperiencesService } from "./experience.service";
 
 @Resolver(() => Experience)

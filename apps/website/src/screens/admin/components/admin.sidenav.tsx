@@ -26,7 +26,7 @@ function AdminSideNav() {
             className={({ isActive, isPending }) =>
               `px-3 py-2 bg-slate-800 
               ${isPending ? "animate-pulse" : ""} 
-              ${isActive ? "bg-purple-900 text-white" : "text-white"}`
+              ${isActive ? "bg-indigo-900 text-white" : "text-white"}`
             }
           >
             {route.title}

@@ -3,6 +3,7 @@ import { gql } from "@apollo/client";
 import apiClient from "../api/apiClient";
 import { IResumeProfile } from "../dtos/resume-profile.dto";
 import { AxiosError } from "axios";
+import { ApiError, graphQlRequest } from "../api/gqlRequest";
 
 const GET_PROFILE_QUERY = gql`
   query CurrentResumeProfile {
@@ -23,6 +24,7 @@ const GET_PROFILE_QUERY = gql`
       }
       abilities {
         title
+        description
         type
       }
       user {
@@ -37,7 +39,7 @@ const GET_PROFILE_QUERY = gql`
 interface UserState {
   resume: IResumeProfile | null;
   loading: boolean;
-  error: AxiosError | null;
+  error: ApiError | null;
 }
 
 const initialState: UserState = {
@@ -46,18 +48,34 @@ const initialState: UserState = {
   error: null,
 };
 
-export const fetchHomePageResume = createAsyncThunk(
+// export const fetchHomePageResume = createAsyncThunk(
+//   "home/fetchHomePageResume",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await apiClient.post("/graphql", {
+//         query: GET_PROFILE_QUERY.loc?.source.body,
+//       });
+//       const data = response.data.data.currentResumeProfile;
+
+//       return data as IResumeProfile;
+//     } catch (e) {
+//       return rejectWithValue(e as AxiosError);
+//     }
+//   }
+// );
+export const fetchHomePageResume = createAsyncThunk<IResumeProfile, void>(
   "home/fetchHomePageResume",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post("/graphql", {
+      const response = await graphQlRequest<{
+        currentResumeProfile: IResumeProfile;
+      }>("/graphql", {
         query: GET_PROFILE_QUERY.loc?.source.body,
       });
-      const data = response.data.data.currentResumeProfile;
 
-      return data as IResumeProfile;
+      return response.currentResumeProfile;
     } catch (e) {
-      return rejectWithValue(e as AxiosError);
+      return rejectWithValue(e as ApiError);
     }
   }
 );
@@ -69,6 +87,11 @@ const homeSlice = createSlice({
     updateProfileUrl: (state, action) => {
       if (state.resume) {
         state.resume.user = { ...state.resume.user, picture: action.payload };
+      }
+    },
+    updateProfile: (state, action) => {
+      if (state.resume) {
+        state.resume = { ...state.resume, ...action.payload};
       }
     },
   },
@@ -83,10 +106,10 @@ const homeSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchHomePageResume.rejected, (state, action) => {
-        state.error = action.payload as AxiosError;
+        state.error = action.payload as ApiError;
         state.loading = false;
       });
   },
 });
-export const {updateProfileUrl}  = homeSlice.actions
+export const { updateProfileUrl ,updateProfile} = homeSlice.actions;
 export default homeSlice.reducer;
