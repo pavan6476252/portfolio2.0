@@ -4,9 +4,9 @@ export const CloudinaryProvider = {
   provide: "CLOUDINARY",
   useFactory: () => {
     return Cloudinary.config({
-      cloud_name: "edufeed",
-      api_key: "976338652162996",
-      api_secret: "pkSVKAFctmYkaLsCeZqRxia3hZo",
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
   },
 };

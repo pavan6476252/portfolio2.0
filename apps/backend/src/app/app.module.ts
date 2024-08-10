@@ -33,21 +33,11 @@ import { Education } from "../resume/education/entities/education.entity";
       isGlobal: true,
     }),
 
-    // TypeOrmModule.forRoot({
-    //   type: "mongodb",
-    //   url: "mongodb://localhost:27017/nxmonorepo",
-    //   // url  : "mongodb+srv://pavan6476252:7b9mbednea@pavan.p9x1pth.mongodb.net/?retryWrites=true&w=majority&appName=pavan",
-    //   database: "events",
-    //   synchronize: true,
-    //   // useUnifiedTopology: true,
-    //   logging: "all",
-    //   entities: [User,BlogPost,Comment,Tag],
-    // }),
 
     TypeOrmModule.forRoot({
       type: "postgres",
       url:
-        "postgresql://portfolio_owner:Hf6xvNPyX9Mw@ep-tight-mountain-a15msik3.ap-southeast-1.aws.neon.tech/portfolio?sslmode=require",
+        process.env.POSTGRES_URL,
       entities: [
         User,
         BlogPost,
