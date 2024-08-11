@@ -31,7 +31,7 @@ export class ProjectResolver {
   }
 
   @Mutation(() => Project)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)  
   createProject(
     @Context("req") req: any,
     @Args("createProjectDto") createProjectDto: CreateProjectDto

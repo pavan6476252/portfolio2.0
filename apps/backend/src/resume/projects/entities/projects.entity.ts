@@ -27,24 +27,31 @@ export class Project {
   @Column()
   projectLink: string;
 
-  @Field((type) => Date, { nullable: true })
-  @Column("date", { nullable: true })
+  // @Field((type) => Date, { nullable: true })
+  // @Column("date", { nullable: true })
+  // startDate: Date;
+
+  // @Field((type) => Date, { nullable: true })
+  // @Column("date", { nullable: true })
+  // endDate?: Date;
+  @Field(() => Date, { nullable: true })
+  @Column({ type: "timestamptz", nullable: true })
   startDate: Date;
 
-  @Field((type) => Date, { nullable: true })
-  @Column("date", { nullable: true })
-  endDate: Date;
+  @Field(() => Date, { nullable: true })
+  @Column({ type: "timestamptz", nullable: true })
+  endDate?: Date;
 
   @Field(() => [String])
   @Column("text", { array: true })
   techStack: string[];
 
-  @Field(() => String)
-  @Column("text")
-  keypoints: string;
+  @Field(() => [String])
+  @Column("text", { array: true })
+  keypoints: string[];
 
   @Field(() => String)
-  @Column("text", { array: true })
+  @Column("text")
   desc: string;
 
   @Field(() => Boolean, { defaultValue: true })

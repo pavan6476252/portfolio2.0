@@ -98,7 +98,7 @@ type Project {
   startDate: Date
   endDate: Date
   techStack: [String!]!
-  keypoints: String!
+  keypoints: [String!]!
   desc: String!
   isActive: Boolean!
 }
@@ -251,10 +251,10 @@ input CreateProjectDto {
   projectLink: String
   bannerImgFile: Upload
   startDate: Date!
-  endDate: Date!
+  endDate: Date
   techStack: [String!]!
   desc: String!
-  keypoints: String!
+  keypoints: [String!]!
   isActive: Boolean! = true
 }
 
@@ -266,7 +266,7 @@ input UpdateProjectDto {
   endDate: Date
   techStack: [String!]
   desc: String
-  keypoints: String
+  keypoints: [String!]
   isActive: Boolean = true
 }
 

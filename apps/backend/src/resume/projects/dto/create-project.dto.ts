@@ -1,6 +1,6 @@
 import { IsArray, IsBoolean, IsDate, IsOptional, IsString } from "class-validator";
 import { Field, InputType } from "@nestjs/graphql";
-import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
+import { FileUpload, GraphQLUpload, } from "graphql-upload-ts";
 import { Project } from "../entities/projects.entity";
 
 @InputType()
@@ -21,9 +21,10 @@ export class CreateProjectDto {
   @IsDate()
   startDate: Date;
 
-  @Field(() => Date)
+  @Field(() => Date,{nullable:true})
   @IsDate()
-  endDate: Date;
+  @IsOptional()
+  endDate?: Date;
 
   @Field(() => [String])
   @IsArray()
@@ -31,14 +32,13 @@ export class CreateProjectDto {
   techStack: string[];
 
   @Field(() => String)
-  @IsArray()
   @IsString()
   desc: string;
 
-  @Field(() => String)
+  @Field(() => [String])
   @IsArray()
   @IsString()
-  keypoints: string;
+  keypoints: [string];
 
   @Field(() => Boolean, { defaultValue: true })
   @IsBoolean()

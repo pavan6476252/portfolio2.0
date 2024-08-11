@@ -2,6 +2,9 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDir": ".",
+    "allowJs": true,
+    "maxNodeModuleJsDepth": 10,
+    
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",

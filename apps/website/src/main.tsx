@@ -5,14 +5,19 @@ import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import { Provider } from "react-redux";
 import store from "./store/store";
+import { ApolloProvider } from "@apollo/client";
+import { apolloClient } from "./store/api/apolloApiClient";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <StrictMode>
+  // <StrictMode>
+  <ApolloProvider client={apolloClient}>
+
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </StrictMode>
+  </ApolloProvider>
+  // </StrictMode>
 );

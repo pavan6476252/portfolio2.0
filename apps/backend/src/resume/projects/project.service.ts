@@ -48,14 +48,10 @@ export class ProjectService {
     id: number,
     updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
     const project = await this.projectRepository.preload({
       id,
       ...updateProjectDto,
-      author: user,
+      author: { id: userId },
     });
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
@@ -89,25 +85,18 @@ export class ProjectService {
   }
 
   async getAllProjects(): Promise<Project[]> {
-    return this.projectRepository.find();
+    return this.projectRepository.find({ relations: ["author"] });
   }
   async getMyProjects(userId: number): Promise<Project[]> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
-    return this.projectRepository.find({ where: { author: user } });
+    return await this.projectRepository.find({
+      where: { author: { id: userId } },
+    });
   }
 
   async deleteProject(userId: number, id: number): Promise<void> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
-
     const project = await this.projectRepository.findOne({
       where: {
-        author: user,
+        author: { id: userId },
         id: id,
       },
     });
