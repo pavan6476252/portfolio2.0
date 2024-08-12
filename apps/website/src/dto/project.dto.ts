@@ -1,6 +1,9 @@
+import { IUser } from "../store/dtos/user.dto";
+
 export interface IProjectResposne {
   id: string;
   title: string;
+  user?:IUser;
   projectLink: string;
   bannerImg: string;
 startDate: Date;

@@ -77,7 +77,8 @@ export class ProjectService {
   }
 
   async getProjectById(id: number): Promise<Project> {
-    const project = await this.projectRepository.findOne({ where: { id } });
+    const project = await this.projectRepository.findOne({ where: { id:id },relations:['author'] });
+    console.log(project)
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
@@ -90,6 +91,18 @@ export class ProjectService {
   async getMyProjects(userId: number): Promise<Project[]> {
     return await this.projectRepository.find({
       where: { author: { id: userId } },
+    });
+  }
+  async getCurrentUserActiveProjects(): Promise<Project[]> {
+    const user = await this.userRepository.findOne({
+      where: { role: "admin" },
+    });
+    console.log("user", user.id);
+    if (!user) {
+      return [];
+    }
+    return await this.projectRepository.find({
+      where: { author: { id: user.id },isActive:true },relations:['author']
     });
   }
 

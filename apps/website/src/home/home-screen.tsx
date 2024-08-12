@@ -99,6 +99,8 @@ function HomeScreen() {
             <br />
             
             <ProjectsSection />
+            <br />
+            <br />
             <BlogsSection />
             <MakeItYoursComponent />
             <FooterSection /> <br />

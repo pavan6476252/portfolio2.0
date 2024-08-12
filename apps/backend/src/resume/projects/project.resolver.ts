@@ -23,6 +23,12 @@ export class ProjectResolver {
     return this.projectService.getMyProjects(sub);
   }
 
+  @Query(() => [Project])
+  getCurrentUserActiveProjects(@Context("req") req: any): Promise<Project[]> {
+    
+    return this.projectService.getCurrentUserActiveProjects();
+  }
+
   @Query(() => Project)
   getProjectById(
     @Args("id", { type: () => Number }) id: number

@@ -11,6 +11,10 @@ import AdminProjectsScreen from "./screens/admin/admin.projects.screen";
 import AdminCreateBlogScreen from "./screens/admin/admin.createblog.screen";
 import AdminAddNewProjectScreen from "./screens/admin/admin.new-project.screen";
 import AdminEditProjectScreen from "./screens/admin/admin.edit-project.screen copy";
+import AllBLogsScreen from "./screens/blogs/all-blogs.screen";
+import ShowSpecificBlogScreen from "./screens/blogs/show-specific-blog.screen";
+import AllProjectsScreen from "./screens/projects/all-projects.screen";
+import ShowSpecificProjectScreen from "./screens/projects/show-specific-project.screen";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +38,34 @@ const router = createBrowserRouter([
             element: <LoginScreen />,
           },
         ],
+      },
+      {
+        path:'blogs',
+        element:<><Outlet/></>,
+        children:[
+          {
+            index:true,
+            element:<AllBLogsScreen/>
+          }
+          ,{
+            path:':id',
+            element:<ShowSpecificBlogScreen/>
+          }
+        ]
+      },
+      {
+        path:'projects',
+        element:<><Outlet/></>,
+        children:[
+          {
+            index:true,
+            element:<AllProjectsScreen/>
+          }
+          ,{
+            path:':id',
+            element:<ShowSpecificProjectScreen/>
+          }
+        ]
       },
       {
         path: "admin",

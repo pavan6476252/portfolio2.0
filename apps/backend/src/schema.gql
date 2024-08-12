@@ -154,6 +154,7 @@ type Query {
   resumeProfile: ResumeProfile!
   getAllProjects: [Project!]!
   getMyProjects: [Project!]!
+  getCurrentUserActiveProjects: [Project!]!
   getProjectById(id: Float!): Project!
   educations: [Education!]!
   education(id: Int!): Education!
