@@ -17,12 +17,13 @@ type Comment {
 
 type BlogPost {
   id: ID!
-  title: String!
-  description: String
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  markdownContent: String
   slug: String
   coverImage: String
   socialImage: String
-  body_markdown: String
   author: User
   comments: [Comment!]
   tags: [Tag!]
@@ -99,8 +100,11 @@ type Project {
   endDate: Date
   techStack: [String!]!
   keypoints: [String!]!
-  desc: String!
   isActive: Boolean!
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  markdownContent: String
 }
 
 type Education {
@@ -159,8 +163,9 @@ type Query {
   educations: [Education!]!
   education(id: Int!): Education!
   myEducations(id: Int!): [Education!]!
-  getAllPosts(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
-  getPostById(id: Int!): BlogPost!
+  getAllBlogs(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
+  getBlog(id: Int!): BlogPost!
+  getCurrentUserActiveBlogs: [BlogPost!]!
 }
 
 input FilterInput {
@@ -183,9 +188,9 @@ type Mutation {
   createEducation(createEducationDto: CreateEducationDto!): Education!
   updateEducation(id: Int!, updateEducationDto: UpdateEducationDto!): Education!
   removeEducation(id: Int!): Boolean!
-  createPost(createBlogPostDTO: CreateBlogPostDTO!): BlogPost!
-  updatePost(id: Int!, updateBlogPostDTO: UpdateBlogPostDTO!): BlogPost!
-  deletePost(id: Int!): Boolean!
+  createBlog(createBlogPostDTO: CreateBlogPostDTO!): BlogPost!
+  updateBlog(id: Int!, updateBlogPostDTO: UpdateBlogPostDTO!): BlogPost!
+  deleteBlog(id: Int!): Boolean!
   sendEmail(emailInput: MailInput!): Boolean!
 }
 
@@ -254,9 +259,12 @@ input CreateProjectDto {
   startDate: Date!
   endDate: Date
   techStack: [String!]!
-  desc: String!
   keypoints: [String!]!
   isActive: Boolean! = true
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  markdownContent: String
 }
 
 input UpdateProjectDto {
@@ -266,9 +274,12 @@ input UpdateProjectDto {
   startDate: Date
   endDate: Date
   techStack: [String!]
-  desc: String
   keypoints: [String!]
   isActive: Boolean = true
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  markdownContent: String
 }
 
 input CreateEducationDto {
@@ -298,23 +309,25 @@ input UpdateEducationDto {
 }
 
 input CreateBlogPostDTO {
-  title: String!
-  description: String!
   coverImageFile: Upload
   socialImageFile: Upload
-  body_markdown: String!
-  tags: [String!]!
-  visible: Boolean = true
+  tags: [String!]
+  visible: Boolean! = true
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  markdownContent: String
 }
 
 input UpdateBlogPostDTO {
-  title: String
-  description: String
   coverImageFile: Upload
   socialImageFile: Upload
-  body_markdown: String
   tags: [String!]
   visible: Boolean = true
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  markdownContent: String
 }
 
 input MailInput {

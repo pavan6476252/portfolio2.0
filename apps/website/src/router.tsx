@@ -15,6 +15,7 @@ import AllBLogsScreen from "./screens/blogs/all-blogs.screen";
 import ShowSpecificBlogScreen from "./screens/blogs/show-specific-blog.screen";
 import AllProjectsScreen from "./screens/projects/all-projects.screen";
 import ShowSpecificProjectScreen from "./screens/projects/show-specific-project.screen";
+import AdminUpdateBlogScreen from "./screens/admin/admin.edit-project.screen copy";
 
 const router = createBrowserRouter([
   {
@@ -82,9 +83,13 @@ const router = createBrowserRouter([
             children: [
               { index: true, element: <AdminBlogsScreen /> }, 
               {
-                path: "create",
+                path: "new",
                 element: <AdminCreateBlogScreen />,
               },
+              {
+                path:'edit/:id',
+                element:<AdminUpdateBlogScreen/>
+              }
             ],
           },
 

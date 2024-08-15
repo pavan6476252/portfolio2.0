@@ -1,319 +1,251 @@
-import React, { useEffect, useState } from "react";
-import {
-  ApiError,
-  graphQLMultipartRequest,
-  graphQlRequest,
-} from "../../store/api/gqlRequest";
-import {
-  ICreateProjectDto,
-  ICreateProjectResponse,
-  IProjectResposne,
-  IUpdateProjectDto,
-} from "../../dto/project.dto";
-import LoadingSpinner from "../../components/loading-spinner";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import React, { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { useParams } from "react-router-dom";
-const FETCH_PROJECT_QUERY = gql`
-  query getProjectById($id: Float!) {
-    getProjectById(id: $id) {
-      id
-      bannerImg
-      title
-      projectLink
-      startDate
-      endDate
-      techStack
-      keypoints
-      desc
-      isActive
-    }
-  }
-`;
+import MarkdownEditor from "@uiw/react-markdown-editor";
+import { IBlogResposne, IUpdateBlogDto } from "../../dto/blogs.dto";
 
-const UPDATE_PROJECT_MUTATION = gql`
-  mutation UpdateProject(
-    $id:Float!
-    $bannerImgFile: Upload
-    $title: String!
-    $projectLink: String!
-    $startDate: Date!
-    $endDate: Date!
-    $techStack: [String!]!
-    $desc: String!
-    $keypoints: [String!]!
-    $isActive: Boolean!
-  ) {
-    updateProject(
-      id:$id
-      updateProjectDto: {
-        bannerImgFile: $bannerImgFile
-        title: $title
-        projectLink: $projectLink
-        startDate: $startDate
-        endDate: $endDate
-        techStack: $techStack
-        desc: $desc
-        keypoints: $keypoints
-        isActive: $isActive
+export const GET_BLOG_BY_ID = gql`
+  query getBlog($id: Int!) {
+    getBlog(id: $id) {
+      id
+      metaTitle
+      metaDescription
+      metaKeywords
+      markdownContent
+      slug
+      coverImage
+      socialImage
+      tags {
+        id
+        name
       }
-    ) {
-      id
+      likes
+      createdAt
+      updatedAt
+      visible
     }
   }
 `;
 
-const AdminEditProjectScreen: React.FC = () => {
-  const params = useParams<{ id: string }>();
-  const { data, loading: queryLoading, error: queryError } = useQuery<{
-    getProjectById: IProjectResposne;
-  }>(FETCH_PROJECT_QUERY, {
-    variables: { id: Number(params.id) },
-  });
-  const [
-    updateProject,
-    { loading: mutationLoading, error: mutationError },
-  ] = useMutation(UPDATE_PROJECT_MUTATION);
+export const UPDATE_BLOG_POST = gql`
+  mutation updateBlog($id: Int!, $input: UpdateBlogPostDTO!) {
+    updateBlog(id: $id, updateBlogPostDTO: $input) {
+      id
+      metaTitle
+      metaDescription
+      metaKeywords
+      markdownContent
+      tags {
+        name
+      }
+      visible
+    }
+  }
+`;
 
-  const [project, setProject] = useState<IUpdateProjectDto>({
-    id: "",
-    bannerImgFile: null,
-    title: "",
-    projectLink: "",
-    startDate: "",
-    endDate: "",
-    techStack: [],
-    desc: "",
-    keypoints: [],
-    isActive: false,
+const AdminUpdateBlogScreen = () => {
+  const { id } = useParams<{ id: string }>();
+  if (!id) {
+    return <h1>Id not passed</h1>;
+  }
+  const [formData, setFormData] = useState<IUpdateBlogDto>({
+    socialImageFile: undefined,
+    coverImageFile: undefined,
+    id: undefined,
+    coverImage: undefined,
+    socialImage: undefined,
+    tags: [],
+    visible: true,
+    metaTitle: "",
+    metaDescription: "",
+    metaKeywords: [],
+    markdownContent: "",
   });
+
+  const { loading, error, data } = useQuery<{ getBlog: IBlogResposne }>(
+    GET_BLOG_BY_ID,
+    {
+      variables: { id: parseInt(id, 10) },
+    }
+  );
+
+  const [updateBlog] = useMutation<
+    { updateBlog: { id: string } },
+    { id: number; input: IUpdateBlogDto }
+  >(UPDATE_BLOG_POST);
 
   useEffect(() => {
-    console.log(data);
     if (data) {
-      setProject({
-        id: data.getProjectById.id,
-        bannerImgFile: null,
-        bannerImg: data.getProjectById.bannerImg,
-        title: data.getProjectById.title,
-        projectLink: data.getProjectById.projectLink,
-        // startDate: data.getProjectById.startDate
-        //   ? data.getProjectById.startDate.toString()
-        //   : undefined,
-        // endDate: data.getProjectById.endDate
-        //   ? data.getProjectById.endDate.toString()
-        //   : undefined,
-        startDate: data.getProjectById.startDate ? new Date(data.getProjectById.startDate).toISOString().split('T')[0] : undefined,
-        endDate: data.getProjectById.endDate ? new Date(data.getProjectById.endDate).toISOString().split('T')[0] : undefined,
-       
-        techStack: data.getProjectById.techStack,
-        desc: data.getProjectById.desc,
-        keypoints: data.getProjectById.keypoints,
-        isActive: data.getProjectById.isActive,
+      console.log(data);
+      setFormData({
+        socialImageFile: undefined,
+        coverImageFile: undefined,
+        id: data.getBlog.id,
+        coverImage: data.getBlog.coverImage,
+        socialImage: data.getBlog.socialImage,
+        tags: data.getBlog.tags?.map((t) => t.name) ?? [],
+        visible: data.getBlog.visible ?? true,
+        metaTitle: data.getBlog.metaTitle,
+        metaDescription: data.getBlog.metaDescription,
+        metaKeywords: data.getBlog.metaKeywords,
+        markdownContent: data.getBlog.markdownContent ?? "",
       });
     }
   }, [data]);
 
-  const handleChange = (
+  const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setProject({
-      ...project,
+    setFormData({
+      ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleTechStackChange = (techStack: string[]) => {
-    setProject({ ...project, techStack });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveBlog = async () => {
     try {
-      await updateProject({
+      const { id,socialImage, coverImage, ...rest } = formData;
+      if(!id)
+        return;
+      const { data } = await updateBlog({
         variables: {
-          ...project,
-          id:Number(params.id)
+          id: Number(id),
+          input: { ...rest },
         },
       });
-    } catch (err) {
-      console.error(err);
+      if (data) {
+        console.log("Blog updated with ID:", data.updateBlog.id);
+      }
+    } catch (error) {
+      console.error("Error updating blog:", error);
     }
   };
 
-  // if (queryLoading) return <div>Loading...</div>;
-  // if (queryError) return <div>Error: {queryError.message}</div>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg ">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Add New Project</h1>
-      {queryLoading && (
-        <div className="flex justify-center">
-          <LoadingSpinner />
-        </div>
-      )}
-      {queryError && (
-        <div className="text-red-500 mb-4">{queryError.message}</div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Title */}
+    <div className="bg-gray-800 text-white flex flex-col h-full p-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Update Blog</h1>
+        <button
+          onClick={handleSaveBlog}
+          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500"
+        >
+          Save Blog
+        </button>
+      </div>
+      <hr className="my-3" />
+      <div className="space-y-4">
+        <input
+          type="text"
+          name="metaTitle"
+          placeholder="Meta Title"
+          value={formData.metaTitle}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 text-white"
+        />
+        <input
+          type="text"
+          name="metaKeywords"
+          placeholder="Meta Keywords"
+          value={formData.metaKeywords.join(",")}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              metaKeywords: e.target.value.split(","),
+            });
+          }}
+          className="w-full p-2 rounded bg-gray-700 text-white"
+        />
+        <input
+          type="text"
+          name="tags"
+          placeholder="tags"
+          value={formData.tags.join(",")}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              tags: e.target.value.split(","),
+            });
+          }}
+          className="w-full p-2 rounded bg-gray-700 text-white"
+        />
+        <textarea
+          name="metaDescription"
+          placeholder="Meta Description"
+          value={formData.metaDescription}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 text-white"
+        />
+      </div>
+
+      <div className="grid grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Project Title
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={project.title}
-            onChange={handleChange}
-            placeholder="Project Title"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
+          <h3>OLD image</h3>
+          {formData.coverImage && <img src={formData.coverImage} />}
+          {formData.coverImageFile && (
+            <img src={URL.createObjectURL(formData.coverImageFile)} />
+          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Cover Image
+            </label>
+            <input
+              type="file"
+              name="coverImageFile"
+              accept="image/png, image/gif, image/jpeg"
+              onChange={({ target: { validity, files } }) => {
+                if (validity.valid) {
+                  setFormData({
+                    ...formData,
+                    coverImageFile: files ? files[0] : undefined,
+                  });
+                }
+              }}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
         </div>
-
-        {/* Project Link */}
+        {/* socialImageFile  */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Project Link
-          </label>
-          <input
-            type="text"
-            name="projectLink"
-            value={project.projectLink}
-            onChange={handleChange}
-            placeholder="Project Link"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
+          <h3>OLD image</h3>
+          {formData.socialImage && <img src={formData.socialImage} />}
+          {formData.socialImageFile && (
+            <img src={URL.createObjectURL(formData.socialImageFile)} />
+          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Social Image
+            </label>
+            <input
+              type="file"
+              name="socialImageFile"
+              accept="image/png, image/gif, image/jpeg"
+              onChange={({ target: { validity, files } }) => {
+                if (validity.valid) {
+                  setFormData({
+                    ...formData,
+                    socialImageFile: files ? files[0] : undefined,
+                  });
+                }
+              }}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
         </div>
-
-        {/* Start Date */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Start Date
-          </label>
-          <input
-            type="date"
-            name="startDate"
-            value={project.startDate}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* End Date */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            End Date
-          </label>
-          <input
-            type="date"
-            name="endDate"
-            value={project.endDate}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* Banner Image */}
-        {project.bannerImg && <img src={project.bannerImg} />}
-        {project.bannerImgFile && (
-          <img src={URL.createObjectURL(project.bannerImgFile)} />
-        )}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Banner Image
-          </label>
-          <input
-            type="file"
-            name="bannerImgFile"
-            accept="image/png, image/gif, image/jpeg"
-            // onChange={handleFileChange}
-            onChange={({ target: { validity, files } }) => {
-              if (validity.valid) {
-                console.log(files);
-                setProject({
-                  ...project,
-                  bannerImgFile: files ? files[0] : null,
-                });
-              }
-            }}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* Tech Stack */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Tech Stack
-          </label>
-          <input
-            type="text"
-            name="techStack"
-            value={project.techStack?.join(",") ?? ""}
-            onChange={(e) => handleTechStackChange(e.target.value.split(","))}
-            placeholder="Tech Stack (comma separated)"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Project Description
-          </label>
-          <textarea
-            name="desc"
-            value={project.desc}
-            onChange={handleChange}
-            placeholder="Project Description"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* Keypoints */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Keypoints
-          </label>
-          <input
-            type="text"
-            name="keypoints"
-            value={project.keypoints?.join(",")}
-            onChange={(e) =>
-              setProject({ ...project, keypoints: e.target.value.split(",") })
-            }
-            placeholder="Keypoints (comma separated)"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* Active Status */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            name="isActive"
-            checked={project.isActive}
-            onChange={(e) =>
-              setProject({ ...project, isActive: e.target.checked })
-            }
-            className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-          />
-          <label className="ml-2 block text-sm font-medium text-gray-700">
-            Is Active
-          </label>
-        </div>
-
-        {/* Submit */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Add Project
-          </button>
-        </div>
-      </form>
+      </div>
+      <br />
+      <MarkdownEditor
+        className="bg-gray-900 text-white p-4 w-full h-full"
+        value={formData.markdownContent}
+        onChange={(value) =>
+          setFormData({ ...formData, markdownContent: value })
+        }
+      />
     </div>
   );
 };
 
-export default AdminEditProjectScreen;
+export default AdminUpdateBlogScreen;

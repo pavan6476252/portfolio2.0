@@ -16,50 +16,64 @@ import { CloudinaryService } from "../upload/cloudinary.service";
 @Resolver(() => BlogPost)
 export class BlogPostResolver {
   constructor(
-    private readonly blogPostService: BlogPostService,
+    private readonly blogBlogService: BlogPostService,
 
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
   @Query(() => BlogPostsResponse)
-  async getAllPosts(
+  async getAllBlogs(
     @Args("limit") limit: number,
     @Args("offset") offset: number,
     @Args("filter") filter: FilterInput
   ) {
-    return this.blogPostService.findAll(limit, offset, filter);
+    return this.blogBlogService.findAll(limit, offset, filter);
   }
 
   @Query(() => BlogPost)
-  async getPostById(@Args("id", { type: () => Int }) id: number) {
-    return this.blogPostService.findById(id);
+  async getBlog(
+    @Args("id", { type: () => Int }) id: number
+  ): Promise<BlogPost> {
+    const blogPost = await this.blogBlogService.findById(id);
+
+    if (!blogPost) {
+      throw new Error(`BlogPost with id ${id} not found`);
+    }
+
+    return blogPost;
+  }
+
+  @Query(() => [BlogPost])
+  async getCurrentUserActiveBlogs() {
+    return this.blogBlogService.getCurrentUserActiveBlogs();
   }
 
   @Mutation(() => BlogPost)
   @UseGuards(JwtAdminOnlyAuthGuard)
-  async createPost(
+  async createBlog(
     @Context("req") req: any,
     @Args("createBlogPostDTO") createBlogPostDTO: CreateBlogPostDTO
   ) {
     const user = req.user as ITokenPayload;
-    return this.blogPostService.create(user.sub, createBlogPostDTO);
+    return this.blogBlogService.create(user.sub, createBlogPostDTO);
   }
 
   @Mutation(() => BlogPost)
   @UseGuards(JwtAdminOnlyAuthGuard)
-  async updatePost(
+  async updateBlog(
     @Args("id", { type: () => Int }) id: number,
     @Args("updateBlogPostDTO") updateBlogPostDTO: UpdateBlogPostDTO
   ) {
-    return this.blogPostService.update(id, updateBlogPostDTO);
+    return this.blogBlogService.update(id, updateBlogPostDTO);
   }
 
   @Mutation(() => Boolean)
   @UseGuards(JwtAdminOnlyAuthGuard)
-  async deletePost(
+  async deleteBlog(
     @Context("req") req: any,
-    @Args("id", { type: () => Int }) id: number) {
-      const user = req.user as ITokenPayload;
-    return this.blogPostService.remove(user.sub,id);
+    @Args("id", { type: () => Int }) id: number
+  ) {
+    const user = req.user as ITokenPayload;
+    return this.blogBlogService.remove(user.sub, id);
   }
 }

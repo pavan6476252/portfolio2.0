@@ -5,10 +5,6 @@ import { GraphQLUpload, FileUpload } from "graphql-upload-ts";
 
 @InputType()
 export class CreateBlogPostDTO {
-  @Field()
-  title: string;
-  @Field()
-  description: string;
 
   @Field(() => GraphQLUpload, { nullable: true })
   coverImageFile?: FileUpload;
@@ -16,12 +12,23 @@ export class CreateBlogPostDTO {
   @Field(() => GraphQLUpload, { nullable: true })
   socialImageFile: FileUpload;
 
-  @Field()
-  body_markdown: string;
-
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   tags: string[];
 
-  @Field({ defaultValue: true, nullable: true })
+  @Field((type) => Boolean, { defaultValue: true })
   visible: boolean;
+
+  // SEO Meta Fields
+  @Field(() => String, { nullable: true })
+  metaTitle: string;
+
+  @Field(() => String, { nullable: true })
+  metaDescription: string;
+
+  @Field(() => [String], { nullable: true })
+  metaKeywords: string[];
+
+  // Markdown Content Field
+  @Field(() => String, { nullable: true })
+  markdownContent: string;
 }

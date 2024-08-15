@@ -13,7 +13,6 @@ import { gql, useMutation } from "@apollo/client";
 const CREATE_PROJECT_MUTATION = gql`
   mutation(
     $bannerImgFile: Upload
-    $desc: String!
     $endDate: Date!
     $techStack: [String!]!
     $isActive: Boolean!
@@ -21,11 +20,18 @@ const CREATE_PROJECT_MUTATION = gql`
     $projectLink: String!
     $startDate: Date!
     $title: String!
+    $metaTitle: String!
+    $metaDescription: String!
+    $metaKeywords: [String!]!
+    $markdownContent:String!
   ) {
     createProject(
       createProjectDto: {
+        metaDescription: $metaDescription
+        metaKeywords: $metaKeywords
+        metaTitle: $metaTitle
+        markdownContent: $markdownContent
         bannerImgFile: $bannerImgFile
-        desc: $desc
         endDate: $endDate
         techStack: $techStack
         isActive: $isActive
@@ -45,13 +51,17 @@ const AdminAddNewProjectScreen: React.FC = () => {
     ICreateProjectDto
   >(CREATE_PROJECT_MUTATION);
   const [project, setProject] = useState<ICreateProjectDto>({
+    metaDescription: "",
+    metaKeywords: [],
+    metaTitle: "",
+    markdownContent: "",
     bannerImgFile: null,
     title: "",
     projectLink: "",
     startDate: "",
     endDate: "",
     techStack: [],
-    desc: "",
+
     keypoints: [],
     isActive: false,
   });
@@ -74,6 +84,9 @@ const AdminAddNewProjectScreen: React.FC = () => {
 
   const handleTechStackChange = (techStack: string[]) => {
     setProject({ ...project, techStack });
+  };
+  const handleMetaKeywordsChange = (metaKeywords: string[]) => {
+    setProject({ ...project, metaKeywords });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,6 +116,51 @@ const AdminAddNewProjectScreen: React.FC = () => {
       )}
       {error && <div className="text-red-500 mb-4">{error.message}</div>}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* META title */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Meta Title
+          </label>
+          <input
+            type="text"
+            name="metaTitle"
+            value={project.metaTitle}
+            onChange={handleChange}
+            placeholder="MEta Title"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </div>
+        {/* description */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Meta Description
+          </label>
+          <input
+            type="text"
+            name="metaDescription"
+            value={project.metaDescription}
+            onChange={handleChange}
+            placeholder="Meta Descriptioin"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </div>
+        {/* MetaKeywords */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Meta Keywords
+          </label>
+          <input
+            type="text"
+            name="metaKeywords"
+            value={project.metaKeywords.join(",")}
+            onChange={(e) =>
+              handleMetaKeywordsChange(e.target.value.split(","))
+            }
+            placeholder="Meta Title"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </div>
+
         {/* Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
@@ -112,6 +170,18 @@ const AdminAddNewProjectScreen: React.FC = () => {
             type="text"
             name="title"
             value={project.title}
+            onChange={handleChange}
+            placeholder="Project Title"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Project Markdown
+          </label>
+          <textarea
+            name="markdownContent"
+            value={project.markdownContent}
             onChange={handleChange}
             placeholder="Project Title"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -198,20 +268,6 @@ const AdminAddNewProjectScreen: React.FC = () => {
             value={project.techStack.join(",")}
             onChange={(e) => handleTechStackChange(e.target.value.split(","))}
             placeholder="Tech Stack (comma separated)"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Project Description
-          </label>
-          <textarea
-            name="desc"
-            value={project.desc}
-            onChange={handleChange}
-            placeholder="Project Description"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>

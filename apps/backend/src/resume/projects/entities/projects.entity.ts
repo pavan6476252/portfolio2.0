@@ -1,8 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../../../auth/user.entity";
-import { FileUpload } from "graphql-upload-ts";
-import GraphQLJSON from "graphql-type-json";
 
 @Entity()
 @ObjectType()
@@ -27,13 +25,6 @@ export class Project {
   @Column()
   projectLink: string;
 
-  // @Field((type) => Date, { nullable: true })
-  // @Column("date", { nullable: true })
-  // startDate: Date;
-
-  // @Field((type) => Date, { nullable: true })
-  // @Column("date", { nullable: true })
-  // endDate?: Date;
   @Field(() => Date, { nullable: true })
   @Column({ type: "timestamptz", nullable: true })
   startDate: Date;
@@ -50,11 +41,25 @@ export class Project {
   @Column("text", { array: true })
   keypoints: string[];
 
-  @Field(() => String)
-  @Column("text")
-  desc: string;
-
   @Field(() => Boolean, { defaultValue: true })
   @Column("boolean", { default: true })
   isActive: boolean;
+
+  // SEO Meta Fields
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  metaTitle: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true, type: "text" })
+  metaDescription: string;
+
+  @Field(() => [String], { nullable: true })
+  @Column("text", { array: true, nullable: true })
+  metaKeywords: string[];
+
+  // Markdown Content Field
+  @Field(() => String, { nullable: true })
+  @Column({ type: "text", nullable: true })
+  markdownContent: string;
 }

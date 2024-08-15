@@ -20,14 +20,24 @@ export class BlogPost {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
-  @Column()
-  title: string;
+  // SEO Meta Fields
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  metaTitle: string;
 
-  @Field((type) => String, { nullable: true })
-  @Column()
-  description: string;
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true, type: "text" })
+  metaDescription: string;
 
+  @Field(() => [String], { nullable: true })
+  @Column("text", { array: true, nullable: true })
+  metaKeywords: string[];
+
+  // Markdown Content Field
+  @Field(() => String, { nullable: true })
+  @Column({ type: "text", nullable: true })
+  markdownContent: string;
+  
   @Field((type) => String, { nullable: true })
   @Column()
   slug: string;
@@ -39,10 +49,6 @@ export class BlogPost {
   @Field((type) => String, { nullable: true })
   @Column()
   socialImage?: string;
-
-  @Field(() => String, { nullable: true })
-  @Column()
-  body_markdown: string;
 
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.blogPosts)

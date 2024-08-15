@@ -1,66 +1,34 @@
 import React from "react";
+import { useQuery, gql } from "@apollo/client";
 import CardLayout from "../../components/card-layout";
+import { IBlogResposne } from "../../dto/blogs.dto";
+
+// GraphQL query to fetch blogs
+const GET_USER_BLOGS = gql`
+  query GetCurrentUserActiveBlogs {
+    getCurrentUserActiveBlogs {
+      id
+      metaTitle
+      metaDescription
+      metaKeywords
+      slug
+      socialImage
+      likes
+      createdAt
+    }
+  }
+`;
 
 function BlogSection() {
-  const blogs = [
-    {
-      title: "The 2024 State of the Website",
-      description:
-        "Discover key challenges today’s marketing teams are facing, as well as opportunities for businesses in 2024.",
-      link: "#",
-      linkText: "Read report",
-      image:
-        "https://cdn.prod.website-files.com/6515a6d5f30daec433d0abe2/6543dd59d1175a1639d298cb_ebook_2024StateOfTheWebsite_Blog_2400x1260-p-500.webp",
-    },
-    {
-      title: "Webflow 101",
-      description:
-        "Learn the fundamentals of web design and development through this comprehensive course.",
-      link: "#",
-      linkText: "Learn more",
-      image:
-        "https://cdn.prod.website-files.com/6515a6d5f30daec433d0abe2/6543dd59d1175a1639d298cb_ebook_2024StateOfTheWebsite_Blog_2400x1260-p-500.webp",
-    },
-    {
-      title: "Marketplace",
-      description:
-        "From templates to Experts, discover everything you need to create an amazing site with Webflow.",
-      link: "#",
-      linkText: "Browse",
-      image:
-        "https://cdn.prod.website-files.com/6515a6d5f30daec433d0abe2/6543dd59d1175a1639d298cb_ebook_2024StateOfTheWebsite_Blog_2400x1260-p-500.webp",
-    },
-    {
-      title: "Webflow University",
-      description:
-        "Search from our library of lessons covering everything from layout and typography to interactions and 3D transforms.",
-      link: "#",
-      linkText: "Visit Webflow University",
-      image:
-        "https://cdn.prod.website-files.com/6515a6d5f30daec433d0abe2/6543dd59d1175a1639d298cb_ebook_2024StateOfTheWebsite_Blog_2400x1260-p-500.webp",
-    },
-    {
-      title: "Webflow University",
-      description:
-        "Search from our library of lessons covering everything from layout and typography to interactions and 3D transforms.",
-      link: "#",
-      linkText: "Visit Webflow University",
-      image:
-        "https://cdn.prod.website-files.com/6515a6d5f30daec433d0abe2/6543dd59d1175a1639d298cb_ebook_2024StateOfTheWebsite_Blog_2400x1260-p-500.webp",
-    },
-    {
-      title: "Webflow University",
-      description:
-        "Search from our library of lessons covering everything from layout and typography to interactions and 3D transforms.",
-      link: "#",
-      linkText: "Visit Webflow University",
-      image:
-        "https://cdn.prod.website-files.com/6515a6d5f30daec433d0abe2/6543dd59d1175a1639d298cb_ebook_2024StateOfTheWebsite_Blog_2400x1260-p-500.webp",
-    },
-  ];
+  const { loading, error, data } = useQuery<{
+    getCurrentUserActiveBlogs: Partial<IBlogResposne>[];
+  }>(GET_USER_BLOGS);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <section className="">
+    <section>
       <div className="container mx-auto">
         <h2 className="text-6xl text-white text-left font-bold mb-4 leading-tight">
           Explore some blogs
@@ -69,27 +37,34 @@ function BlogSection() {
           Browse the Marketplace, educational videos, and customer stories.
         </p>
       </div>
-      <div className="flex pl-14 gap-8 overflow-x-scroll no-scrollbar  ">
-        {blogs.map((blog, idx) => (
-          <CardLayout key={blog.title} className="min-w-[400px] text-white w-[400px] aspect-[8/9]  border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ">
+      <div className="flex pl-14 gap-8 overflow-x-scroll no-scrollbar">
+        {data?.getCurrentUserActiveBlogs.map((blog) => (
+          <CardLayout
+            key={blog.id}
+            className="min-w-[400px] text-white w-[400px] aspect-[8/9] border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+          >
             <img
-              src={blog.image}
-              alt={blog.title}
+              src={blog.socialImage}
+              alt={blog.metaTitle}
               className="w-full h-48 object-cover"
             />
             <div className="p-6 flex flex-col items-start">
               <h3 className="text-2xl font-semibold mb-2 text-left">
-                {blog.title}
+                {blog.metaTitle || "Untitled Blog"}
               </h3>
-              <p className="text-gray-700 text-left  mb-4">
-                {blog.description}
+              <p className="text-gray-700 text-left mb-4">
+                {blog.metaDescription || "No description available."}
               </p>
-              <a
-                href={blog.link}
-                className="text-blue-600  hover:underline flex items-center"
-              >
-                {blog.linkText} <span className="ml-2">&rarr;</span>
-              </a>
+              <p className="text-sm text-gray-500 mb-2">
+                Keywords: {blog.metaKeywords ?? [].join(", ")}
+              </p>
+              <p className="text-sm text-gray-500 mb-4">Likes: {blog.likes}</p>
+              <p className="text-sm text-gray-500">
+                Published on:
+                {blog.createdAt!==undefined
+                  ? new Date(parseInt(blog.createdAt)).toLocaleDateString()
+                  : "Date not available"}
+              </p>
             </div>
           </CardLayout>
         ))}

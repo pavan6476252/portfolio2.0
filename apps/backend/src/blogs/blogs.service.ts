@@ -54,8 +54,23 @@ export class BlogPostService {
     const total = await query.getCount();
     return new BlogPostsResponse(blogs, total);
   }
-  async findById(id: number): Promise<BlogPost[]> {
-    return this.blogPostRepository.findBy({ id });
+  async findById(id: number): Promise<BlogPost> {
+    return this.blogPostRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ["tags"],
+    });
+  }
+  async getCurrentUserActiveBlogs(): Promise<BlogPost[]> {
+    const user = await this.userRepository.findOne({
+      where: { role: "admin" },
+    });
+
+    if (!user) {
+      throw new NotFoundException("Admin details not found");
+    }
+    return this.blogPostRepository.find({ where: { author: { id: user.id } } });
   }
 
   generateUniqueSlug(title: string): string {
@@ -69,7 +84,7 @@ export class BlogPostService {
     createBlogPostDTO: CreateBlogPostDTO
   ): Promise<BlogPost> {
     const {
-      title,
+      metaTitle,
       tags,
       coverImageFile,
       socialImageFile,
@@ -119,11 +134,11 @@ export class BlogPostService {
       socialImageUrl = uploadResult.secure_url;
     }
 
-    const uniqueSlug = this.generateUniqueSlug(title);
+    const uniqueSlug = this.generateUniqueSlug(metaTitle);
 
     const newPost = this.blogPostRepository.create({
       ...postDetails,
-      title,
+      metaTitle,
       slug: uniqueSlug,
       coverImage: coverImageUrl,
       socialImage: socialImageUrl,
@@ -134,71 +149,72 @@ export class BlogPostService {
 
     return await this.blogPostRepository.save(newPost);
   }
-
   async update(
     id: number,
     updateBlogPostDTO: UpdateBlogPostDTO
   ): Promise<BlogPost> {
     const {
-      title,
+      metaTitle,
       tags,
       coverImageFile,
       socialImageFile,
       ...updateFields
     } = updateBlogPostDTO;
-
+  
     const post = await this.blogPostRepository.findOne({ where: { id } });
-
+  
     if (!post) {
       throw new NotFoundException(`Blog post with ID ${id} not found`);
     }
-
+  
     if (tags) {
       const tagEntities = await this.tagService.preloadOrCreateTags(tags);
       post.tags = tagEntities;
     }
-    if (title) {
-      const uniqueSlug = this.generateUniqueSlug(title);
+    if (metaTitle) {
+      const uniqueSlug = this.generateUniqueSlug(metaTitle);
       post.slug = uniqueSlug;
     }
-
-    if (coverImageFile && post.coverImage) {
+  
+    if (coverImageFile) {
       const resolvedFile = await coverImageFile;
-      const { createReadStream, filename } = resolvedFile;
-
-      const uniqueFilename = `${filename}-${Date.now()}`;
-      const uploadResult = await this.cloudinaryService.uploadStream(
-        createReadStream,
-        uniqueFilename,
-        "blogs"
-      );
-      await this.cloudinaryService.deleteFile(post.coverImage);
-
-      console.log(uploadResult.public_id, uploadResult.secure_url);
-      post.coverImage = uploadResult.secure_url;
+      if (resolvedFile) {
+        const { createReadStream, filename } = resolvedFile;
+        const uniqueFilename = `${filename}-${Date.now()}`;
+        const uploadResult = await this.cloudinaryService.uploadStream(
+          createReadStream,
+          uniqueFilename,
+          "blogs"
+        );
+        if (post.coverImage) {
+          await this.cloudinaryService.deleteFile(post.coverImage);
+        }
+        post.coverImage = uploadResult.secure_url;
+      }
     }
-
-    if (socialImageFile && post.socialImage) {
-      const resolvedFile = await coverImageFile;
-      const { createReadStream, filename } = resolvedFile;
-
-      const uniqueFilename = `${filename}-${Date.now()}`;
-      const uploadResult = await this.cloudinaryService.uploadStream(
-        createReadStream,
-        uniqueFilename,
-        "blogs"
-      );
-      console.log(uploadResult.public_id, uploadResult.secure_url);
-
-      await this.cloudinaryService.deleteFile(post.coverImage);
-
-      post.socialImage = uploadResult.secure_url;
+  
+    if (socialImageFile) {
+      const resolvedFile = await socialImageFile; 
+      if (resolvedFile) {
+        const { createReadStream, filename } = resolvedFile;
+        const uniqueFilename = `${filename}-${Date.now()}`;
+        const uploadResult = await this.cloudinaryService.uploadStream(
+          createReadStream,
+          uniqueFilename,
+          "blogs"
+        );
+        if (post.socialImage) {
+          await this.cloudinaryService.deleteFile(post.socialImage); 
+        }
+        post.socialImage = uploadResult.secure_url;
+      }
     }
-
+  
     Object.assign(post, updateFields);
-
+  
     return this.blogPostRepository.save(post);
   }
+  
 
   async remove(userId: number, id: number): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -208,6 +224,13 @@ export class BlogPostService {
     const blog = await this.blogPostRepository.findOne({
       where: { id: id, author: user },
     });
+
+    if (!blog) {
+      throw new NotFoundException(
+        `Blog post not found with ID ${id} for user ${userId}`
+      );
+    }
+
     const deleteImagePromises = [];
 
     if (blog.socialImage) {

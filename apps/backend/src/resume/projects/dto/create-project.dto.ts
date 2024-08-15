@@ -31,10 +31,6 @@ export class CreateProjectDto {
   @IsString({ each: true })
   techStack: string[];
 
-  @Field(() => String)
-  @IsString()
-  desc: string;
-
   @Field(() => [String])
   @IsArray()
   @IsString()
@@ -43,4 +39,17 @@ export class CreateProjectDto {
   @Field(() => Boolean, { defaultValue: true })
   @IsBoolean()
   isActive: boolean;
+
+
+  @Field(() => String, { nullable: true })
+  metaTitle: string;
+
+  @Field(() => String, { nullable: true })
+  metaDescription: string;
+
+  @Field(() => [String], { nullable: true })
+  metaKeywords: string[];
+
+  @Field(() => String, { nullable: true })
+  markdownContent: string;
 }

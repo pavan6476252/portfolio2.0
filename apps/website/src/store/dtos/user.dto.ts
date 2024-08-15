@@ -1,7 +1,7 @@
-export interface IUser {
+export interface IUserResponse {
   id: string;
-  username: string;
+  username?: string;
   picture?: string;
-  email: string;
-  role: string;
+  email?: string;
+  role?: string;
 }

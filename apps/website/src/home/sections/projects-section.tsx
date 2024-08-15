@@ -13,14 +13,11 @@ const FETCH_ACTIVE_PROJECTS = gql`
         picture
         username
       }
-      bannerImg
       title
       projectLink
       startDate
       endDate
-      techStack
-      keypoints
-      desc
+      techStack 
       isActive
     }
   }
@@ -40,7 +37,7 @@ function ProjectsSection() {
     "#00d722",
     "#7a3dff",
   ];
-
+  console.log(data)
   if (loading) {
     return (
       <div className="w-full h-2 flex justify-center items-center">
