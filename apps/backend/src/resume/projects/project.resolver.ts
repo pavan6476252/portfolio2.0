@@ -23,9 +23,8 @@ export class ProjectResolver {
     return this.projectService.getMyProjects(sub);
   }
 
-  @Query(() => [Project])
+  @Query(() => [Project], { nullable: true })
   getCurrentUserActiveProjects(@Context("req") req: any): Promise<Project[]> {
-    
     return this.projectService.getCurrentUserActiveProjects();
   }
 
@@ -37,7 +36,7 @@ export class ProjectResolver {
   }
 
   @Mutation(() => Project)
-  @UseGuards(JwtAuthGuard)  
+  @UseGuards(JwtAuthGuard)
   createProject(
     @Context("req") req: any,
     @Args("createProjectDto") createProjectDto: CreateProjectDto
@@ -54,8 +53,8 @@ export class ProjectResolver {
     @Args("updateProjectDto") updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
     const { sub } = req.user as ITokenPayload;
-  
-    return this.projectService.updateProject(sub,id, updateProjectDto);
+
+    return this.projectService.updateProject(sub, id, updateProjectDto);
   }
 
   @Mutation(() => Boolean)

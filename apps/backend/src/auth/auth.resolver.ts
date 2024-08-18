@@ -80,4 +80,23 @@ export class AuthResolver {
       throw new UnauthorizedException("Refresh token is expired or invalid");
     }
   }
+  @Mutation(() => Boolean)
+  async logout(
+    @Context("req") req: any,
+    @Context("res") res: Response
+  ): Promise<boolean> {
+    const refreshToken = req.cookies?.refresh_token;
+    if (!refreshToken) {
+      throw new UnauthorizedException("Refresh token is missing");
+    }
+
+    res.clearCookie("refresh_token", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+    });
+
+    return true;
+  }
 }

@@ -113,43 +113,59 @@ text-white  hover:scale-95
         togglSocialIconsVisibility={togglePopupPanelVisibility}
         visibility={visibility}
       />
+      {editMode && (
+        <>
+          <br />
+        </>
+      )}
       <div className="flex flex-col gap-16">
         <div className="container mx-auto">
-          <div className="flex justify-between  items-center container mx-auto mb-5">
-            <h1 className="text-5xl text-white font-bold leading-tight">
-              Developer Tools
-              <br />I have worked with
-            </h1>
-            {editMode && (
-              <button
-                className="relative h-min inline-block font-medium group py-3 px-8"
-                onClick={togglePopupPanelVisibility}
-              >
-                <span className="absolute inset-0 w-full h-full transition duration-400 ease-out transform translate-x-1 translate-y-1 bg-red-600 group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
-                <span className="absolute inset-0 w-full h-full bg-white border border-red-600 group-hover:bg-indigo-50"></span>
-                <span className="relative flex gap-4 items-center">Edit</span>
-              </button>
-            )}
-          </div>
+          {(editMode || resumeState.resume.developerTools.length > 0) && (
+            <div className="flex justify-between  items-center container mx-auto mt-10">
+              <h1 className="text-5xl text-white font-bold leading-tight">
+                Developer Tools
+                <br />I have worked with
+              </h1>
+              {editMode && (
+                <button
+                  className="relative h-min inline-block font-medium group py-3 px-8"
+                  onClick={togglePopupPanelVisibility}
+                >
+                  <span className="absolute inset-0 w-full h-full transition duration-400 ease-out transform translate-x-1 translate-y-1 bg-red-600 group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
+                  <span className="absolute inset-0 w-full h-full bg-white border border-red-600 group-hover:bg-indigo-50"></span>
+                  <span className="relative flex gap-4 items-center">Edit</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
-        <InfiniteScroll
-          scrollDirection="animate-infinite-scroll-r-to-l"
-          className=" w-screen"
-        >
-          {frontend.map(renderSkils)}
-        </InfiniteScroll>
-        <InfiniteScroll
-          scrollDirection="animate-infinite-scroll-l-to-r"
-          className="h-14 w-screen "
-        >
-          {backend.map(renderSkils)}
-        </InfiniteScroll>
-        <InfiniteScroll
-          scrollDirection="animate-infinite-scroll-r-to-l"
-          className="h-14 w-screen"
-        >
-          {other.map(renderSkils)}
-        </InfiniteScroll>
+        {resumeState.resume.developerTools.length > 0 && (
+          <>
+            <InfiniteScroll
+              scrollDirection="animate-infinite-scroll-r-to-l"
+              className=" w-screen"
+            >
+              {frontend.map(renderSkils)}
+            </InfiniteScroll>
+            <InfiniteScroll
+              scrollDirection="animate-infinite-scroll-l-to-r"
+              className="h-14 w-screen "
+            >
+              {backend.map(renderSkils)}
+            </InfiniteScroll>
+            <InfiniteScroll
+              scrollDirection="animate-infinite-scroll-r-to-l"
+              className="h-14 w-screen"
+            >
+              {other.map(renderSkils)}
+            </InfiniteScroll>
+          </>
+        )}
+        {editMode && (
+          <>
+            <hr />
+          </>
+        )}
       </div>
     </>
   );

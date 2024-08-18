@@ -1,12 +1,27 @@
 import React, { useContext, useState } from "react";
+import { useMutation, gql } from "@apollo/client";
 import EditableWrapper from "../../components/editable-wrapper";
 import { useAppSelector, useAppDispatch } from "../../store/store";
 import EditContext from "../../context/edit-context";
 import ContactUsFormComponent from "./contact-us.component";
 import { FaShareAlt } from "react-icons/fa";
-import apiClient from "../../store/api/apiClient";
-import { updateProfile } from "../../store/slice/homeSlice"; // Assuming you have an action to update the store
-import { graphQlRequest } from "../../store/api/gqlRequest";
+import { updateProfile } from "../../store/slice/homeSlice";
+
+const UPDATE_RESUME_PROFILE = gql`
+  mutation UpdateResumeProfile(
+    $fullName: String!
+    $tagline: String!
+    $description: String!
+  ) {
+    updateResumeProfile(
+      updateResumeProfileDto: {
+        fullName: $fullName
+        tagline: $tagline
+        description: $description
+      }
+    )
+  }
+`;
 
 function HeroSectionContentComponent() {
   const resumeState = useAppSelector((state) => state.home);
@@ -14,8 +29,6 @@ function HeroSectionContentComponent() {
   const dispatch = useAppDispatch();
 
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-
   const [newName, setNewName] = useState(resumeState.resume?.fullName || "");
   const [newTagline, setNewTagLine] = useState(
     resumeState.resume?.tagline || ""
@@ -24,42 +37,41 @@ function HeroSectionContentComponent() {
     resumeState.resume?.description || ""
   );
 
+  const [updateResumeProfile, { loading, error }] = useMutation(
+    UPDATE_RESUME_PROFILE,
+    {
+      onCompleted: (data) => {
+        if (data.updateResumeProfile) {
+          dispatch(
+            updateProfile({
+              fullName: newName,
+              tagline: newTagline,
+              description: newDescription,
+            })
+          );
+        }
+      },
+    }
+  );
+
   if (!resumeState.resume || resumeState.loading) {
     return null;
   }
 
-  const handleUpdateProfile = async () => {
-    setLoading(true);
-    try {
-      const response = await graphQlRequest<{ updateResumeProfile: boolean }>(
-        "/graphql",
-        {
-          query: `
-            mutation {
-              updateResumeProfile(updateResumeProfileDto: {
-                fullName: "${newName}",
-                tagline: "${newTagline}",
-                description: "${newDescription}"
-              })
-            }
-          `,
-        }
-      );
-
-      if (response.updateResumeProfile) {
-        dispatch(
-          updateProfile({
-            fullName: newName,
-            tagline: newTagline,
-            description: newDescription,
-          })
-        );
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      setLoading(false);
-    }
+  const handleUpdateProfile = () => {
+    console.log({
+      fullName: newName,
+      tagline: newTagline,
+      description: newDescription,
+    });
+    // return;
+    updateResumeProfile({
+      variables: {
+        fullName: newName,
+        tagline: newTagline,
+        description: newDescription,
+      },
+    });
   };
 
   const handleCancelEdit = () => {
@@ -72,33 +84,28 @@ function HeroSectionContentComponent() {
     <>
       <EditableWrapper
         className="font-bold text-4xl w-full md:text-5xl lg:text-6xl text-white"
-        initialValue={resumeState.resume.fullName}
+        initialValue={resumeState.resume.fullName ?? "Your name goes here"}
         isEditable={editMode}
         maxRows={1}
         onChange={(newVal) => setNewName(newVal)}
-      >
-        <h1>{resumeState.resume.fullName}</h1>
-      </EditableWrapper>
+      ></EditableWrapper>
       <div className="flex items-center gap-4 w-full flex-nowrap mb-4">
         <span className="w-full h-1 bg-[#4f46e5]"></span>
         <EditableWrapper
           className="inline text-nowrap text-white font-semibold"
-          initialValue={resumeState.resume.tagline}
+          initialValue={resumeState.resume.tagline ?? ""}
           isEditable={editMode}
           maxRows={1}
           onChange={(newVal) => setNewTagLine(newVal)}
-        >
-          <span>{resumeState.resume.tagline}</span>
-        </EditableWrapper>
+        ></EditableWrapper>
       </div>
       <EditableWrapper
         className="text-lg w-full md:text-xl text-slate-300"
-        initialValue={resumeState.resume.description}
+        initialValue={resumeState.resume.description ?? ""}
         isEditable={editMode}
         onChange={(newVal) => setNewDescription(newVal)}
-      >
-        <p>{resumeState.resume.description}</p>
-      </EditableWrapper>
+      ></EditableWrapper>
+      <br />
       <br />
       <div className="flex justify-between">
         <button
@@ -112,9 +119,7 @@ function HeroSectionContentComponent() {
           </span>
         </button>
 
-        {(newName !== resumeState.resume.fullName ||
-          newTagline !== resumeState.resume.tagline ||
-          newDescription !== resumeState.resume.description) && (
+        {editMode && (
           <div className="flex w-min gap-2">
             <button
               className="relative inline-block font-medium group py-3 px-8"

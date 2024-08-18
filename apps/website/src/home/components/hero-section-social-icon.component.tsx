@@ -6,21 +6,13 @@ import EditContext from "../../context/edit-context";
 import { TbEditCircle } from "react-icons/tb";
 
 function HeroSectionSocialIconsComponent() {
-    const resumeState = useAppSelector((state) => state.home);
-    const { editMode, setEditMode } = useContext(EditContext);
-    if (
-      !resumeState.resume ||
-      resumeState.loading ||
-      !resumeState.resume?.fullName ||
-      !resumeState.resume.tagline ||
-      !resumeState.resume.description
-    ) {
-      return null;
-    }
-  
-    const { user, fullName, tagline, description } = resumeState.resume;
-  
-    const [socialIconsVisibility, setSocialIconsVisibility] = useState(false);
+  const resumeState = useAppSelector((state) => state.home);
+  const { editMode, setEditMode } = useContext(EditContext);
+  if (!resumeState.resume || resumeState.loading) {
+    return null;
+  }
+
+  const [socialIconsVisibility, setSocialIconsVisibility] = useState(false);
 
   return (
     <>

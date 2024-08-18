@@ -16,6 +16,7 @@ import ShowSpecificBlogScreen from "./screens/blogs/show-specific-blog.screen";
 import AllProjectsScreen from "./screens/projects/all-projects.screen";
 import ShowSpecificProjectScreen from "./screens/projects/show-specific-project.screen";
 import AdminUpdateBlogScreen from "./screens/admin/admin.edit-project.screen copy";
+import NavBar from "./components/navbar";
 
 const router = createBrowserRouter([
   {
@@ -41,32 +42,42 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path:'blogs',
-        element:<><Outlet/></>,
-        children:[
+        path: "blogs",
+        element: (
+          <>
+            <NavBar />
+            <Outlet />
+          </>
+        ),
+        children: [
           {
-            index:true,
-            element:<AllBLogsScreen/>
-          }
-          ,{
-            path:':id',
-            element:<ShowSpecificBlogScreen/>
-          }
-        ]
+            index: true,
+            element: <AllBLogsScreen />,
+          },
+          {
+            path: ":id",
+            element: <ShowSpecificBlogScreen />,
+          },
+        ],
       },
       {
-        path:'projects',
-        element:<><Outlet/></>,
-        children:[
+        path: "projects",
+        element: (
+          <>
+            <NavBar />
+            <Outlet />
+          </>
+        ),
+        children: [
           {
-            index:true,
-            element:<AllProjectsScreen/>
-          }
-          ,{
-            path:':id',
-            element:<ShowSpecificProjectScreen/>
-          }
-        ]
+            index: true,
+            element: <AllProjectsScreen />,
+          },
+          {
+            path: ":id",
+            element: <ShowSpecificProjectScreen />,
+          },
+        ],
       },
       {
         path: "admin",
@@ -81,35 +92,39 @@ const router = createBrowserRouter([
             path: "blogs",
 
             children: [
-              { index: true, element: <AdminBlogsScreen /> }, 
+              { index: true, element: <AdminBlogsScreen /> },
               {
                 path: "new",
                 element: <AdminCreateBlogScreen />,
               },
               {
-                path:'edit/:id',
-                element:<AdminUpdateBlogScreen/>
-              }
+                path: "edit/:id",
+                element: <AdminUpdateBlogScreen />,
+              },
             ],
           },
 
           {
             path: "projects",
-            element: <><Outlet/></>,
-            children:[
+            element: (
+              <>
+                <Outlet />
+              </>
+            ),
+            children: [
               {
-                index:true,
-                element:<AdminProjectsScreen/>
+                index: true,
+                element: <AdminProjectsScreen />,
               },
               {
-                path:'new',
-                element:<AdminAddNewProjectScreen/>
+                path: "new",
+                element: <AdminAddNewProjectScreen />,
               },
               {
-                path:'edit/:id',
-                element:<AdminEditProjectScreen/>
-              }
-            ]
+                path: "edit/:id",
+                element: <AdminEditProjectScreen />,
+              },
+            ],
           },
         ],
       },

@@ -17,6 +17,7 @@ import LoginButton from "./login-button";
 import Dropdown from "./drop-down";
 import { NavLink } from "react-router-dom";
 import EditContext from "../context/edit-context";
+import LogoutButton from "../screens/admin/components/logout-button";
 function NavBar() {
   const { user } = useAppSelector((s) => s.user);
   const auth = useAppSelector((s) => s.auth);
@@ -33,7 +34,7 @@ function NavBar() {
     <div className="z-20 items-center dark:text-white fixed top-0 h-14 w-full border-slate-500 border-b bg-[#080808] drop-shadow-[0_35px_35px_rgba(117,117,117,0.2)">
       <div className="container h-full mx-auto items-center flex justify-between">
         <h1 className="text-2xl">
-          {resumeState.resume?.fullName ?? "UnNamed Site"}
+          {resumeState.resume?.fullName ?? "Portfolio"}
         </h1>
         <SearchBar />
 
@@ -87,7 +88,7 @@ function NavBar() {
                   </NavLink>
                 )}
                 <li className="w-full bg-[#b0acf6] flex gap-2 items-center py-2 px-2">
-                  <FaSignOutAlt /> Logout
+                  <LogoutButton className="bg-[#b0acf6] flex gap-2 items-center p-0 flex-row-reverse" />
                 </li>
               </ul>
             </Dropdown>
@@ -95,10 +96,8 @@ function NavBar() {
             <LoginButton />
           )}
           <button className="flex gap-2  items-center bg-[#4f46e5] px-4 py-2 rounded-sm">
-            <span className="hidden md:block">
-            Share
-            </span>
-              <FaShare />
+            <span className="hidden md:block">Share</span>
+            <FaShare />
           </button>
         </div>
       </div>

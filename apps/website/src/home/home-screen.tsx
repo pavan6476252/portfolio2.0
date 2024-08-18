@@ -19,6 +19,7 @@ import { LuFileWarning, LuX } from "react-icons/lu";
 import { CiWarning } from "react-icons/ci";
 import { IoRemoveCircleOutline } from "react-icons/io5";
 import NoContentSVG from "../assets/no_content.svg";
+import { Link } from "react-router-dom";
 function HomeScreen() {
   const dispatch = useAppDispatch();
   const resumeState = useAppSelector((s) => s.home);
@@ -63,21 +64,27 @@ function HomeScreen() {
               re-login again
             </p>
           </div>
-          
+
           <CiWarning size={30} className="text-yellow-500" />
-         
         </NotificationBar>
       )}
 
       {resumeState.error?.errors && (
-        <NotificationBar className=" flex justify-between text-lg items-center">
+        <NotificationBar className="flex justify-between text-lg items-center">
           <div>
-            <h1 className="font-semibold text-black">Unknown error</h1>
-            <p className="text-slate-700">{resumeState.error?.message}</p>
+            <h1>Database Errors | Manage from <Link to='/admin' className="underline">Admin panel</Link></h1>
+            <p className="text-slate-700">
+              {resumeState.error.errors.map((msg: any, index: number) => (
+                <span key={index} className="mr-3">
+                  {msg.message}
+                </span>
+              ))}
+            </p>
           </div>
           <CiWarning size={30} className="text-yellow-500" />
         </NotificationBar>
       )}
+
       <div className=" bg-[#080808] w-full overflow-x-hidden selection:bg-purple-300 selection:text-slate-900">
         <NavBar />
         {resumeState.resume === null && !resumeState.loading ? (
@@ -89,18 +96,9 @@ function HomeScreen() {
             <br />
             <HeroSection />
             <IntroSection />
-            <br />
-            <br /> 
             <MyAbilitiesSection />
-            <br />
-            <br />
             <TechnologiesSection />
-            <br />
-            <br />
-            
             <ProjectsSection />
-            <br />
-            <br />
             <BlogsSection />
             <MakeItYoursComponent />
             <FooterSection /> <br />

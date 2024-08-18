@@ -154,18 +154,18 @@ scalar Date
 type Query {
   getProfile: User!
   resumeProfiles: [ResumeProfile!]!
-  currentResumeProfile: ResumeProfile!
+  getPortfolio: ResumeProfile
   resumeProfile: ResumeProfile!
   getAllProjects: [Project!]!
   getMyProjects: [Project!]!
-  getCurrentUserActiveProjects: [Project!]!
+  getCurrentUserActiveProjects: [Project!]
   getProjectById(id: Float!): Project!
   educations: [Education!]!
   education(id: Int!): Education!
   myEducations(id: Int!): [Education!]!
   getAllBlogs(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
   getBlog(id: Int!): BlogPost!
-  getCurrentUserActiveBlogs: [BlogPost!]!
+  getCurrentUserActiveBlogs: [BlogPost!]
 }
 
 input FilterInput {
@@ -178,7 +178,9 @@ type Mutation {
   login(email: String!, password: String!): User!
   register(registerInput: RegisterInput!): User!
   refreshTokens: RefreshTokenResponse!
+  logout: Boolean!
   updateUser(userUpdateInput: UserUpdateInputDTO!): User!
+  changeUserRoleToAdmin(secretKey: String!): Boolean!
   createResumeProfile(createResumeProfileDto: CreateResumeProfileDto!): ResumeProfile!
   updateResumeProfile(updateResumeProfileDto: UpdateResumeProfileDto!): Boolean!
   removeResumeProfile: Boolean!

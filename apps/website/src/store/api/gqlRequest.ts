@@ -48,7 +48,6 @@ interface IOperations {
 //     formData.append("operations", JSON.stringify(newData));
 //     formData.append("map", JSON.stringify(map));
 
-    
 //     Object.entries(operations.variables).forEach((key, idx) => {
 //       // if (key[1] instanceof File) {
 //         console.log(idx.toString(), key[1]);
@@ -128,7 +127,7 @@ export const graphQLMultipartRequest = async <T>(
 
     Object.entries(operations.variables).forEach(([key, value], idx) => {
       if (value instanceof File) {
-        console.log(key,value)
+        console.log(key, value);
         formData.append(idx.toString(), value);
       }
     });
@@ -143,7 +142,7 @@ export const graphQLMultipartRequest = async <T>(
         },
       }
     );
-console.log(response.data)
+    console.log(response.data);
     if (response.data.errors) {
       throw new ApiError(
         "GraphQL errors occurred",
@@ -175,7 +174,6 @@ console.log(response.data)
   }
 };
 
-
 export const graphQlRequest = async <T>(
   url: string,
   data?: { query: string | undefined; variables?: any }
@@ -195,23 +193,27 @@ export const graphQlRequest = async <T>(
 
     return response.data.data as T;
   } catch (e) {
-    const error = e as AxiosError;
-    console.error("API request failed", error);
+    if (e instanceof AxiosError) {
+      const error = e as AxiosError;
+      console.error("API request failed", error);
 
-    if (error.response) {
-      const res = error.response as any;
-      throw new ApiError(
-        res.data?.message || "An unexpected error occurred",
-        error.response.status,
-        res.data.errors || null
-      );
-    } else if (error.request) {
-      throw new ApiError(
-        "Network error: The request was made but no response was received",
-        0
-      );
-    } else {
-      throw new ApiError(error.message || "An unexpected error occurred");
+      if (error.response) {
+        const res = error.response as any;
+        throw new ApiError(
+          res.data?.message || "An unexpected error occurred",
+          error.response.status,
+          res.data.errors || null
+        );
+      } else if (error.request) {
+        throw new ApiError(
+          "Network error: The request was made but no response was received",
+          0
+        );
+      } else {
+        throw new ApiError(error.message || "An unexpected error occurred");
+      }
+    }else{
+      throw e;
     }
   }
 };

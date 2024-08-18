@@ -63,14 +63,23 @@ export class BlogPostService {
     });
   }
   async getCurrentUserActiveBlogs(): Promise<BlogPost[]> {
-    const user = await this.userRepository.findOne({
-      where: { role: "admin" },
-    });
+    try {
+      const user = await this.userRepository.findOne({
+        where: { role: "admin" },
+      });
 
-    if (!user) {
-      throw new NotFoundException("Admin details not found");
+      if (!user) {
+        throw new NotFoundException("Admin details not found");
+      }
+      return this.blogPostRepository.find({
+        where: { author: { id: user.id } },
+      });
+    } catch (e) {
+      console.log(e);
+      throw new NotFoundException(
+        "No blogs found."
+      );
     }
-    return this.blogPostRepository.find({ where: { author: { id: user.id } } });
   }
 
   generateUniqueSlug(title: string): string {
@@ -160,13 +169,13 @@ export class BlogPostService {
       socialImageFile,
       ...updateFields
     } = updateBlogPostDTO;
-  
+
     const post = await this.blogPostRepository.findOne({ where: { id } });
-  
+
     if (!post) {
       throw new NotFoundException(`Blog post with ID ${id} not found`);
     }
-  
+
     if (tags) {
       const tagEntities = await this.tagService.preloadOrCreateTags(tags);
       post.tags = tagEntities;
@@ -175,7 +184,7 @@ export class BlogPostService {
       const uniqueSlug = this.generateUniqueSlug(metaTitle);
       post.slug = uniqueSlug;
     }
-  
+
     if (coverImageFile) {
       const resolvedFile = await coverImageFile;
       if (resolvedFile) {
@@ -192,9 +201,9 @@ export class BlogPostService {
         post.coverImage = uploadResult.secure_url;
       }
     }
-  
+
     if (socialImageFile) {
-      const resolvedFile = await socialImageFile; 
+      const resolvedFile = await socialImageFile;
       if (resolvedFile) {
         const { createReadStream, filename } = resolvedFile;
         const uniqueFilename = `${filename}-${Date.now()}`;
@@ -204,17 +213,16 @@ export class BlogPostService {
           "blogs"
         );
         if (post.socialImage) {
-          await this.cloudinaryService.deleteFile(post.socialImage); 
+          await this.cloudinaryService.deleteFile(post.socialImage);
         }
         post.socialImage = uploadResult.secure_url;
       }
     }
-  
+
     Object.assign(post, updateFields);
-  
+
     return this.blogPostRepository.save(post);
   }
-  
 
   async remove(userId: number, id: number): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { id: userId } });

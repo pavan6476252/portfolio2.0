@@ -24,13 +24,7 @@ interface Props {}
 
 const HeroSection: React.FC<Props> = () => {
   const resumeState = useAppSelector((state) => state.home);
-  if (
-    !resumeState.resume ||
-    resumeState.loading ||
-    !resumeState.resume?.fullName ||
-    !resumeState.resume.tagline ||
-    !resumeState.resume.description
-  ) {
+  if (!resumeState.resume || resumeState.loading) {
     return null;
   }
 
@@ -41,14 +35,14 @@ const HeroSection: React.FC<Props> = () => {
       <br />
       <br />
       <motion.div
-        className="container  max-w-6xl  min-h-screen mx-auto grid grid-cols-1 sm:grid-cols-5 lg:grid-cols-12  lg:place-items-center gap-4 "
+        className="container  max-w-6xl  min-h-screen mx-auto grid grid-cols-1 sm:grid-cols-5 lg:grid-cols-12  lg:place-items-center gap-12 "
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         {/* Profile Picture */}
         <motion.div
-          className="col-span-1 max-w-sm  mx-auto sm:col-span-3 sm:order-2   lg:col-span-4 lg:order-3 "
+          className="col-span-1 max-w-sm   w-full  mx-auto sm:col-span-3 sm:order-2   lg:col-span-4 lg:order-3 "
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}

@@ -36,25 +36,32 @@ export class ResumeProfileService {
     return this.resumeProfileRepository.find();
   }
   async getcurrentPortfolio(): Promise<ResumeProfile> {
-    const user = await this.userRepository.findOne({
-      where: { role: "admin" },
-    });
+    try {
+      const user = await this.userRepository.findOne({
+        where: { role: "admin" },
+      });
 
-    if (!user) {
-      throw new NotFoundException("Admin information not found");
+      if (!user) {
+        throw new NotFoundException("Admin information not found");
+      }
+
+      const resumeProfile = await this.resumeProfileRepository.findOne({
+        where: { user: { id: user.id } },
+
+        relations: ["user"],
+      });
+
+      if (!resumeProfile) {
+        throw new NotFoundException("Resume profile not found for admin user");
+      }
+
+      return resumeProfile;
+    } catch (e) {
+      console.log(e)
+      throw  new NotFoundException(
+        "No profile found."
+      );
     }
-
-    const resumeProfile = await this.resumeProfileRepository.findOne({
-      where: { user: { id: user.id } },
-
-      relations: ["user"],
-    });
-
-    if (!resumeProfile) {
-      throw new NotFoundException("Resume profile not found for admin user");
-    }
-
-    return resumeProfile;
   }
 
   findOne(id: number): Promise<ResumeProfile> {
@@ -72,20 +79,20 @@ export class ResumeProfileService {
     if (!user) {
       throw new NotFoundException("Admin information not found");
     }
-     
+
     if (!user.resumeProfile) {
       await this.create(userId, updateResumeProfileDto);
       return true;
     }
-    
+
     const updateResult = await this.resumeProfileRepository.update(
       { id: user.resumeProfile.id },
       { ...updateResumeProfileDto, user }
     );
-    
+
     return updateResult.affected > 0;
   }
-  
+
   async remove(id: number): Promise<void> {
     await this.resumeProfileRepository.delete(id);
   }

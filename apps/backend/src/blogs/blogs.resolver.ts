@@ -43,7 +43,7 @@ export class BlogPostResolver {
     return blogPost;
   }
 
-  @Query(() => [BlogPost])
+  @Query(() => [BlogPost], { nullable: true })
   async getCurrentUserActiveBlogs() {
     return this.blogBlogService.getCurrentUserActiveBlogs();
   }

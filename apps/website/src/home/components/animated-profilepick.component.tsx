@@ -63,7 +63,7 @@ const AnimatedProfilePicComponent: React.FC<Props> = ({ profilePic }) => {
 
   const handleUpdateProfilePic = async () => {
     if (newPic) {
-      setLoading(true); // Start loading animation
+      setLoading(true);
       try {
         const data = await sendGraphQLMultipartRequest(newPic);
 
@@ -75,7 +75,7 @@ const AnimatedProfilePicComponent: React.FC<Props> = ({ profilePic }) => {
       } catch (error) {
         console.error("Error updating profile picture:", error);
       } finally {
-        setLoading(false); // Stop loading animation
+        setLoading(false); 
       }
     }
   };
@@ -102,7 +102,7 @@ const AnimatedProfilePicComponent: React.FC<Props> = ({ profilePic }) => {
       <div className="relative w-full aspect-square">
         (
         <img
-          src={previewUrl || "/default-profile-pic.png"} // Use a default image if none is provided
+          src={previewUrl || "/default-profile-pic.png"}
           className="animate-border-animation h-full w-full border-[8px] border-[#4f46e5] object-cover rounded-full"
           alt="Profile Picture"
         />

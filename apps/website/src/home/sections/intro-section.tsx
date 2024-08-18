@@ -20,12 +20,7 @@ const IntroSection: React.FC = () => {
   );
   const [loading, setLoading] = useState(false);
 
-  if (
-    !resumeState.resume ||
-    resumeState.loading ||
-    resumeState.resume?.heroTitle == undefined ||
-    resumeState.resume.heroDescription == undefined
-  ) {
+  if (!resumeState.resume || resumeState.loading) {
     return null;
   }
 
@@ -74,41 +69,33 @@ const IntroSection: React.FC = () => {
   };
 
   return (
+    <>
     <div className="font-workSans flex flex-col gap-10 sm:my-[10%] md:my-[5%] lg:my-0 justify-center items-center">
       <EditableWrapper
-        isEditable={editMode}
         className="text-center font-bold text-5xl text-white"
-        initialValue={resumeState.resume.heroTitle}
+        initialValue={resumeState.resume.heroTitle ?? "Your name goes here"}
+        isEditable={editMode}
+        maxRows={1}
         onChange={(newVal) => setNewHeroTitle(newVal)}
-      >
-        <h1>
-          {newHeroTitle.split("\\n").map((line, index) => (
-            <span key={index}>
-              {line}
-              {index !== newHeroTitle.split("\\n").length - 1 && <br />}
-            </span>
-          ))}
-        </h1>
-      </EditableWrapper>
+        ></EditableWrapper>
 
       <EditableWrapper
         isEditable={editMode}
         className="text-center text-xl text-slate-300 max-w-3xl mx-auto"
-        initialValue={resumeState.resume.heroDescription}
+        initialValue={
+          resumeState.resume.heroDescription ?? "An Short description goes here"
+        }
         onChange={(newVal) => setNewHeroDescription(newVal)}
-      >
-        <p>{newHeroDescription}</p>
-      </EditableWrapper>
+        ></EditableWrapper>
 
-      {(newHeroTitle !== resumeState.resume.heroTitle ||
-        newHeroDescription !== resumeState.resume.heroDescription) && (
+      {editMode && (
         <div className="flex gap-4 mt-4">
           <div className="flex w-min gap-2">
             <button
               className="relative inline-block font-medium group py-3 px-8"
               onClick={handleUpdateProfile}
               disabled={loading}
-            >
+              >
               <span
                 className={`absolute inset-0 w-full h-full transition duration-400 ease-out transform translate-x-1 translate-y-1 ${
                   loading ? "bg-gray-400" : "bg-green-600"
@@ -135,6 +122,17 @@ const IntroSection: React.FC = () => {
         </div>
       )}
     </div>
+    {
+      (resumeState.resume.heroTitle && resumeState.resume.heroDescription) &&(
+        <div>
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>
+      )
+    }
+      </>
   );
 };
 

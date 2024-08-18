@@ -1,4 +1,4 @@
-import { IUser } from "./user.dto";
+import { IUserResponse } from "./user.dto";
 
 export interface ISocialPlatform {
   link: string;
@@ -17,14 +17,14 @@ export interface IAbility {
 }
 
 export interface IResumeProfile {
-  fullName: string;
-  tagline: string;
-  description: string;
+  fullName?: string;
+  tagline?: string;
+  description?: string;
   heroTitle: string;
   heroDescription: string;
   domains: string[];
   socialPlatforms: ISocialPlatform[];
   developerTools: ISkill[];
   abilities: IAbility[];
-  user: IUser;
+  user: IUserResponse;
 }

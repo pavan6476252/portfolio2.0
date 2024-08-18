@@ -27,7 +27,7 @@ export class ResumeProfileResolver {
     return this.resumeProfileService.findAll();
   }
 
-  @Query(() => ResumeProfile, { name: "currentResumeProfile" })
+  @Query(() => ResumeProfile, {nullable:true })
   getPortfolio() {
     return this.resumeProfileService.getcurrentPortfolio();
   }

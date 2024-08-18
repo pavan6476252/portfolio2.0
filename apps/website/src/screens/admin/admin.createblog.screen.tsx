@@ -46,7 +46,7 @@
 //   };
 
 //   return (
-//     <div className="bg-gray-800 text-white flex flex-col h-full p-6">
+//     <div className="bg-gray-900 text-white flex flex-col h-full p-6">
 //       <div className="flex justify-between items-center">
 //         <h1 className="text-2xl font-bold">Create Blog</h1>
 //         <button
@@ -134,12 +134,12 @@ const AdminCreateBlogScreen = () => {
   };
 
   return (
-    <div className="bg-gray-800 text-white flex flex-col h-full p-6">
+    <div className="bg-gray-900 text-white flex flex-col h-full p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Create Blog</h1>
         <button
           onClick={handleSaveBlog}
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500"
+          className="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-blue-500"
         >
           Save Blog
         </button>
