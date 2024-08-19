@@ -10,11 +10,14 @@ import { User } from "../auth/user.entity";
 import { Project } from "./projects/entities/projects.entity";
 import { ProjectResolver } from "./projects/project.resolver";
 import { ProjectService } from "./projects/project.service";
+import { SearchModule } from "../search/search.module";
+import { SearchService } from "../search/search.service";
 
 @Module({
   imports: [
     EducationModule,
     CloudinaryModule,
+    SearchModule,
     TypeOrmModule.forFeature([ResumeProfile, User, Project]),
   ],
   providers: [
@@ -23,6 +26,7 @@ import { ProjectService } from "./projects/project.service";
     ResumeProfileResolver,
     ProjectResolver,
     ProjectService,
-],
+    SearchService,
+  ],
 })
 export class ResumeModule {}

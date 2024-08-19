@@ -97,17 +97,23 @@ const AdminUpdateBlogScreen = () => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    if (e.target.name === "visible") {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value === "true",
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
   const handleSaveBlog = async () => {
     try {
-      const { id,socialImage, coverImage, ...rest } = formData;
-      if(!id)
-        return;
+      const { id, socialImage, coverImage, ...rest } = formData;
+      if (!id) return;
       const { data } = await updateBlog({
         variables: {
           id: Number(id),
@@ -176,6 +182,13 @@ const AdminUpdateBlogScreen = () => {
           name="metaDescription"
           placeholder="Meta Description"
           value={formData.metaDescription}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 text-white"
+        />
+        <input
+          name="visible"
+          type="checkbox"
+          checked={formData.visible}
           onChange={handleInputChange}
           className="w-full p-2 rounded bg-gray-700 text-white"
         />

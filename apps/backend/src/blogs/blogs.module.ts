@@ -9,9 +9,15 @@ import { User } from "../auth/user.entity";
 import { CloudinaryModule } from "../upload/cloudinary.module";
 import { CloudinaryService } from "../upload/cloudinary.service";
 import { TagService } from "./tag.service";
+import { SearchModule } from "../search/search.module";
+import { SearchService } from "../search/search.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BlogPost, Comment, Tag, User]),CloudinaryModule],
-  providers: [BlogPostResolver, BlogPostService, CloudinaryService, TagService],
+  imports: [
+    TypeOrmModule.forFeature([BlogPost, Comment, Tag, User]),
+    CloudinaryModule,
+    SearchModule,
+  ],
+  providers: [BlogPostResolver, BlogPostService, CloudinaryService, TagService,SearchService],
 })
 export class BlogsModule {}

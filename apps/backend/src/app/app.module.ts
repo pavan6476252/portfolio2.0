@@ -17,15 +17,16 @@ import { BlogPost } from "../blogs/entities/blog-post.entity";
 import { Comment } from "../blogs/entities/comment.entity";
 import { Tag } from "../blogs/entities/tag.entity";
 import { Certification } from "../resume/certifications/entity/certifications.entity";
-import { Experience } from "../resume/experience/entities/experience.entity"; 
+import { Experience } from "../resume/experience/entities/experience.entity";
 import { Project } from "../resume/projects/entities/projects.entity";
 import { EmailModule } from "../mailer/mailer.module";
 import { ResumeProfile } from "../resume/entities/resume-profile.entity";
 import { CloudinaryModule } from "../upload/cloudinary.module";
 import { CloudinaryService } from "../upload/cloudinary.service";
 import GraphQLJSON from "graphql-type-json";
-import { DateScalar } from "../common/date.scalar"; 
+import { DateScalar } from "../common/date.scalar";
 import { Education } from "../resume/education/entities/education.entity";
+import { SearchModule } from "../search/search.module";
 
 @Module({
   imports: [
@@ -33,11 +34,9 @@ import { Education } from "../resume/education/entities/education.entity";
       isGlobal: true,
     }),
 
-
     TypeOrmModule.forRoot({
       type: "postgres",
-      url:
-        process.env.POSTGRES_URL,
+      url: process.env.POSTGRES_URL,
       entities: [
         User,
         BlogPost,
@@ -47,7 +46,7 @@ import { Education } from "../resume/education/entities/education.entity";
         Experience,
         Project,
         ResumeProfile,
-        Education
+        Education,
       ],
       synchronize: true,
     }),
@@ -61,7 +60,8 @@ import { Education } from "../resume/education/entities/education.entity";
     ResumeModule,
     BlogsModule,
     EmailModule,
+    SearchModule,
   ],
-  providers:[DateScalar]
+  providers: [DateScalar],
 })
 export class AppModule {}

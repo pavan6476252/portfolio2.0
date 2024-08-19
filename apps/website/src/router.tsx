@@ -10,12 +10,12 @@ import AdminBlogsScreen from "./screens/admin/admin.blogs.screen";
 import AdminProjectsScreen from "./screens/admin/admin.projects.screen";
 import AdminCreateBlogScreen from "./screens/admin/admin.createblog.screen";
 import AdminAddNewProjectScreen from "./screens/admin/admin.new-project.screen";
-import AdminEditProjectScreen from "./screens/admin/admin.edit-project.screen copy";
+import AdminEditProjectScreen from "./screens/admin/admin.update-project.screen";
 import AllBLogsScreen from "./screens/blogs/all-blogs.screen";
 import ShowSpecificBlogScreen from "./screens/blogs/show-specific-blog.screen";
 import AllProjectsScreen from "./screens/projects/all-projects.screen";
 import ShowSpecificProjectScreen from "./screens/projects/show-specific-project.screen";
-import AdminUpdateBlogScreen from "./screens/admin/admin.edit-project.screen copy";
+import AdminUpdateBlogScreen from "./screens/admin/admin.update-blog.screen";
 import NavBar from "./components/navbar";
 
 const router = createBrowserRouter([

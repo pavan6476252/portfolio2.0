@@ -13,6 +13,8 @@ import { BlogPostsResponse } from "./dto/blogspost.response.dto";
 import { TagService } from "./tag.service";
 import { CloudinaryService } from "../upload/cloudinary.service";
 import slugify from "slugify";
+import { IndexNames, SearchService } from "../search/search.service";
+import { SearchResult } from "../search/dto/search-results.dto";
 
 @Injectable()
 export class BlogPostService {
@@ -22,7 +24,8 @@ export class BlogPostService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly tagService: TagService
+    private readonly tagService: TagService,
+    private searchService: SearchService
   ) {}
 
   async findAll(
@@ -76,9 +79,7 @@ export class BlogPostService {
       });
     } catch (e) {
       console.log(e);
-      throw new NotFoundException(
-        "No blogs found."
-      );
+      throw new NotFoundException("No blogs found.");
     }
   }
 
@@ -156,7 +157,23 @@ export class BlogPostService {
       likes: 0,
     });
 
-    return await this.blogPostRepository.save(newPost);
+    const newBlog = await this.blogPostRepository.save(newPost);
+    if (newBlog.visible) {
+      await this.searchService.addorUpdateDataInIndex<SearchResult>({
+        objectID: newBlog.id.toString(),
+        body: {
+          type: "blog",
+          id: newBlog.id.toString(),
+          title: newBlog.metaTitle,
+          desc: newBlog.metaDescription,
+          body: newBlog.markdownContent,
+          keywords: newBlog.metaKeywords,
+          image: newBlog.socialImage,
+        },
+        type: "blog",
+      });
+    }
+    return newBlog;
   }
   async update(
     id: number,
@@ -221,7 +238,30 @@ export class BlogPostService {
 
     Object.assign(post, updateFields);
 
-    return this.blogPostRepository.save(post);
+    const updatedBlog = await this.blogPostRepository.save(post);
+
+    if (updatedBlog.visible) {
+      await this.searchService.addorUpdateDataInIndex<SearchResult>({
+        objectID: updatedBlog.id.toString(),
+        body: {
+          type: "blog",
+          id: updatedBlog.id.toString(),
+          title: updatedBlog.metaTitle,
+          desc: updatedBlog.metaDescription,
+          body: updatedBlog.markdownContent,
+          keywords: updatedBlog.metaKeywords,
+          image: updatedBlog.socialImage,
+        },
+        type: "blog",
+      });
+    } else {
+      await this.searchService.removeDataFromIndex({
+        objectID: updatedBlog.id.toString(),
+        type: "blog",
+      });
+    }
+
+    return updatedBlog;
   }
 
   async remove(userId: number, id: number): Promise<boolean> {
@@ -255,6 +295,10 @@ export class BlogPostService {
     await Promise.all(deleteImagePromises);
     const result = await this.blogPostRepository.delete({ id });
 
+    await this.searchService.removeDataFromIndex({
+      objectID: blog.id.toString(),
+      type: "blog",
+    });
     return result.affected > 0;
   }
 }

@@ -6,6 +6,8 @@ import { CreateProjectDto } from "./dto/create-project.dto";
 import { UpdateProjectDto } from "./dto/update-project.dto";
 import { User } from "../../auth/user.entity";
 import { CloudinaryService } from "../../upload/cloudinary.service";
+import { IndexNames, SearchService } from "../../search/search.service";
+import { SearchResult } from "../../search/dto/search-results.dto";
 
 @Injectable()
 export class ProjectService {
@@ -14,7 +16,8 @@ export class ProjectService {
     private projectRepository: Repository<Project>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
+    private searchService: SearchService
   ) {}
 
   async createProject(
@@ -40,7 +43,24 @@ export class ProjectService {
       bannerImg: uploadRes.secure_url,
     });
 
-    return this.projectRepository.save(project);
+    const newProject = await this.projectRepository.save(project);
+    if (newProject.isActive) {
+      await this.searchService.addorUpdateDataInIndex<SearchResult>({
+        objectID: newProject.id.toString(),
+        body: new SearchResult({
+          type: "project",
+          id: newProject.id.toString(),
+          title: newProject.title,
+          body: newProject.markdownContent,
+          desc: newProject.metaDescription,
+          keywords: newProject.metaKeywords,
+          image: newProject.bannerImg,
+        }),
+        type: "project",
+      });
+    }
+
+    return newProject;
   }
 
   async updateProject(
@@ -73,7 +93,29 @@ export class ProjectService {
       project.bannerImg = uploadRes.secure_url;
     }
 
-    return this.projectRepository.save(project);
+    const newProject = await this.projectRepository.save(project);
+    if (newProject.isActive) {
+      await this.searchService.addorUpdateDataInIndex<SearchResult>({
+        objectID: newProject.id.toString(),
+        body: new SearchResult({
+          type: "project",
+          id: newProject.id.toString(),
+          title: newProject.title,
+          body: newProject.markdownContent,
+          desc: newProject.metaDescription,
+          keywords: newProject.metaKeywords,
+          image: newProject.bannerImg,
+        }),
+        type: "project",
+      });
+    } else {
+      await this.searchService.removeDataFromIndex({
+        objectID: newProject.id.toString(),
+        type: "project",
+      });
+    }
+
+    return newProject;
   }
 
   async getProjectById(id: number): Promise<Project> {
@@ -111,9 +153,7 @@ export class ProjectService {
       });
     } catch (e) {
       console.log(e);
-      throw new NotFoundException(
-        "No projects found "
-      );
+      throw new NotFoundException("No projects found ");
     }
   }
 
@@ -129,6 +169,13 @@ export class ProjectService {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
 
-    await this.projectRepository.remove(project);
+    const removedProject = await this.projectRepository.remove(project);
+    console.log(removedProject);
+
+    const newProject = await this.projectRepository.save(project);
+    await this.searchService.removeDataFromIndex({
+      objectID: newProject.id.toString(),
+      type: "project",
+    });
   }
 }
