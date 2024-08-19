@@ -148,6 +148,16 @@ type BlogPostsResponse {
   total: Int!
 }
 
+type SearchResult {
+  id: ID!
+  type: String!
+  title: String!
+  desc: String!
+  body: String!
+  keywords: [String!]!
+  image: String!
+}
+
 """Date custom scalar type"""
 scalar Date
 
@@ -159,10 +169,11 @@ type Query {
   getAllProjects: [Project!]!
   getMyProjects: [Project!]!
   getCurrentUserActiveProjects: [Project!]
-  getProjectById(id: Float!): Project!
+  getProjectById(id: Int!): Project!
   educations: [Education!]!
   education(id: Int!): Education!
   myEducations(id: Int!): [Education!]!
+  search(query: String!, indexName: String!): [SearchResult!]!
   getAllBlogs(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
   getBlog(id: Int!): BlogPost!
   getCurrentUserActiveBlogs: [BlogPost!]
@@ -185,7 +196,7 @@ type Mutation {
   updateResumeProfile(updateResumeProfileDto: UpdateResumeProfileDto!): Boolean!
   removeResumeProfile: Boolean!
   createProject(createProjectDto: CreateProjectDto!): Project!
-  updateProject(id: Float!, updateProjectDto: UpdateProjectDto!): Project!
+  updateProject(id: Int!, updateProjectDto: UpdateProjectDto!): Project!
   deleteProject(id: Float!): Boolean!
   createEducation(createEducationDto: CreateEducationDto!): Education!
   updateEducation(id: Int!, updateEducationDto: UpdateEducationDto!): Education!

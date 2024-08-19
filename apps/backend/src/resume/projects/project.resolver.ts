@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Args, Context, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { ProjectService } from "./project.service";
 import { Project } from "./entities/projects.entity";
 import { UpdateProjectDto } from "./dto/update-project.dto";
@@ -30,7 +30,7 @@ export class ProjectResolver {
 
   @Query(() => Project)
   getProjectById(
-    @Args("id", { type: () => Number }) id: number
+    @Args("id", { type: () => Int }) id: number
   ): Promise<Project> {
     return this.projectService.getProjectById(id);
   }
@@ -49,7 +49,7 @@ export class ProjectResolver {
   @UseGuards(JwtAuthGuard)
   updateProject(
     @Context("req") req: any,
-    @Args("id", { type: () => Number }) id: number,
+    @Args("id", { type: () => Int }) id: number,
     @Args("updateProjectDto") updateProjectDto: UpdateProjectDto
   ): Promise<Project> {
     const { sub } = req.user as ITokenPayload;

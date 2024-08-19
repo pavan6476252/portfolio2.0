@@ -18,6 +18,7 @@ import Dropdown from "./drop-down";
 import { NavLink } from "react-router-dom";
 import EditContext from "../context/edit-context";
 import LogoutButton from "../screens/admin/components/logout-button";
+import AlgoliaSearchBar from "./searchbar/algolia-search-bar";
 function NavBar() {
   const { user } = useAppSelector((s) => s.user);
   const auth = useAppSelector((s) => s.auth);
@@ -36,7 +37,8 @@ function NavBar() {
         <h1 className="text-2xl">
           {resumeState.resume?.fullName ?? "Portfolio"}
         </h1>
-        <SearchBar />
+        {/* <SearchBar /> */}
+        <AlgoliaSearchBar/>
 
         <div className="flex  gap-4 place-items-center ">
           {user ? (

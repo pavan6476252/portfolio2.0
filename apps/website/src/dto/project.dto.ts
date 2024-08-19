@@ -3,7 +3,7 @@ import { IUserResponse } from "../store/dtos/user.dto";
 export interface IProjectResposne {
   id: string;
   metaDescription?: string;
-  metaKeywords?: [string];
+  metaKeywords?: string[];
   metaTitle?: string;
   markdownContent?:string
   title: string;
@@ -12,8 +12,8 @@ export interface IProjectResposne {
   bannerImg: string;
   startDate: Date;
   endDate: Date;
-  techStack: [string];
-  keypoints: [string];
+  techStack: string[];
+  keypoints: string[];
   isActive: boolean;
 }
 
@@ -32,7 +32,7 @@ export interface ICreateProjectDto {
   isActive: boolean; // Project active status
 }
 export interface IUpdateProjectDto {
-  id: string;
+  id?: string;
   metaDescription: string;
   metaKeywords: string[];
   metaTitle: string;
