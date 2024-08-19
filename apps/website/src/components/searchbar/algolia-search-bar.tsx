@@ -12,8 +12,8 @@ import SearchBar from "./search-bar";
 import SearchResults from "./search-results";
 import EmptyQueryBoundary from "./empty-query-boundary";
 const searchClient = liteClient(
-  "SDVRN6TKB1",
-  "89e2b430a93fb9f5ff3726ef0c6cff4a",
+  import.meta.env.VITE_ALGOLIA_APPLICATION_ID!,
+  import.meta.env.VITE_ALGOLIA_SEARCH_API_KEY!,
   {}
 );
 
@@ -33,15 +33,13 @@ const searchClient = liteClient(
 // }
 
 const AlgoliaSearchBar: React.FC = () => {
-  
   return (
     <InstantSearch searchClient={searchClient} indexName="unified">
       <Configure />
       <div className="relative w-full  max-w-lg mx-auto">
         <SearchBar />
         <EmptyQueryBoundary>
-          <SearchResults
-          />
+          <SearchResults />
         </EmptyQueryBoundary>
       </div>
     </InstantSearch>
