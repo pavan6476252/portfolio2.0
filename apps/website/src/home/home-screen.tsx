@@ -55,7 +55,7 @@ function HomeScreen() {
           description: resumeState.resume?.heroDescription ?? "",
           keywords: resumeState.resume?.domains ?? [],
           creatorName: resumeState.resume?.user.username ?? "",
-          title: "Portfolio " + resumeState.resume?.fullName,
+          title: "Portfolio " + resumeState.resume?.fullName??"",
           type: "card",
         }}
       />

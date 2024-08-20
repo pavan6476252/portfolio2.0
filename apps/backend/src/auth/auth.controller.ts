@@ -31,11 +31,11 @@ export class AuthController {
 
     res.cookie("refresh_token", tokens.refresh_token, {
       httpOnly: true,
-      sameSite: "development" == "development" ? "lax" : "none",
-      secure: "development" == "development" ? false : true,
+      sameSite: process.env.MODE == "development" ? "lax" : "none",
+      secure: process.env.MODE == "development" ? false : true,
     });
 
-    const frontendUrl = "http://localhost:4200/auth";
+    const frontendUrl = process.env.FRONTEND_BASE_URL + "/auth";
     // const frontendUrl = "http://localhost:5000";
     const returnBackUrl = req.session.returnBackUrl || "/";
     const redirectUrl = `${frontendUrl}?access_token=${tokens.access_token}&return=${returnBackUrl}`;

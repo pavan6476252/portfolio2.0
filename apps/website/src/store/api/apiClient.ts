@@ -2,7 +2,7 @@ import axios from "axios";
 import store from "../store";
 import { refreshToken, setToken } from "../slice/authSlice";
 const apiClient = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: import.meta.env.VITE_BACKEND_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
