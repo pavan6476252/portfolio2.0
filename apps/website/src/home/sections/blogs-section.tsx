@@ -40,7 +40,7 @@ function BlogSection() {
              <img
                src={blog?.socialImage || ""}
                alt=""
-               className="w-full h-auto "
+               className="w-full h-auto aspect-video "
              />
              <div className="flex-1 p-4">
                <div className="flex flex-col items-start">

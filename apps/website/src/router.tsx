@@ -55,7 +55,7 @@ const router = createBrowserRouter([
             element: <AllBLogsScreen />,
           },
           {
-            path: ":id",
+            path: ":slug",
             element: <ShowSpecificBlogScreen />,
           },
         ],
@@ -74,7 +74,7 @@ const router = createBrowserRouter([
             element: <AllProjectsScreen />,
           },
           {
-            path: ":id",
+            path: ":slug",
             element: <ShowSpecificProjectScreen />,
           },
         ],

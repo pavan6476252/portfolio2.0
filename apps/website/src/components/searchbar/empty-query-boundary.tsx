@@ -8,7 +8,8 @@ export default function EmptyQueryBoundary({
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }) {
-  const { indexUiState } = useInstantSearch();
+  
+  const { indexUiState ,} = useInstantSearch();
 
   if (!indexUiState.query) {
     return (

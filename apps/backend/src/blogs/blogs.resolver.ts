@@ -12,6 +12,7 @@ import { FilterInput } from "./dto/filter-input.dto";
 import { BlogPostResponse } from "./dto/blogpost.response.dto";
 import { BlogPostsResponse } from "./dto/blogspost.response.dto";
 import { CloudinaryService } from "../upload/cloudinary.service";
+import { PaginatedBlogPostResult } from "../dto/paginated-result.dto";
 
 @Resolver(() => BlogPost)
 export class BlogPostResolver {
@@ -42,10 +43,33 @@ export class BlogPostResolver {
 
     return blogPost;
   }
+  @Query(() => BlogPost)
+  async getBlogBySlug(
+    @Args("slug", { type: () => String }) slug: string
+  ): Promise<BlogPost> {
+    const blogPost = await this.blogBlogService.findBySlug(slug);
+
+    if (!blogPost) {
+      throw new Error(`BlogPost with id ${slug} not found`);
+    }
+
+    return blogPost;
+  }
 
   @Query(() => [BlogPost], { nullable: true })
   async getCurrentUserActiveBlogs() {
     return this.blogBlogService.getCurrentUserActiveBlogs();
+  }
+
+  @Query(() => PaginatedBlogPostResult, { nullable: true })
+  getActiveBlogs(
+    @Context("req") req: any,
+    @Args("limit", { type: () => Int, nullable: true, defaultValue: 10 })
+    limit: number,
+    @Args("offset", { type: () => Int, nullable: true, defaultValue: 0 })
+    offset: number
+  ): Promise<PaginatedBlogPostResult> {
+    return this.blogBlogService.getActiveBlogs(limit,offset)
   }
 
   @Mutation(() => BlogPost)

@@ -15,6 +15,7 @@ import { CloudinaryService } from "../upload/cloudinary.service";
 import slugify from "slugify";
 import { IndexNames, SearchService } from "../search/search.service";
 import { SearchResult } from "../search/dto/search-results.dto";
+import { PaginatedBlogPostResult } from "../dto/paginated-result.dto";
 
 @Injectable()
 export class BlogPostService {
@@ -65,6 +66,15 @@ export class BlogPostService {
       relations: ["tags"],
     });
   }
+  async findBySlug(slug: string): Promise<BlogPost> {
+    return this.blogPostRepository.findOne({
+      where: {
+        slug,
+        visible: true,
+      },
+      relations: ["tags", "author"],
+    });
+  }
   async getCurrentUserActiveBlogs(): Promise<BlogPost[]> {
     try {
       const user = await this.userRepository.findOne({
@@ -80,6 +90,35 @@ export class BlogPostService {
     } catch (e) {
       console.log(e);
       throw new NotFoundException("No blogs found.");
+    }
+  }
+  async getActiveBlogs(
+    limit: number,
+    offset: number
+  ): Promise<PaginatedBlogPostResult> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { role: "admin" },
+      });
+
+      if (!user) {
+        return { result: [], total: 0 };
+      }
+
+      return {
+        result: await this.blogPostRepository.find({
+          where: { author: { id: user.id }, visible: true },
+          relations: ["author"],
+          take: limit,
+          skip: offset,
+        }),
+        total: await this.blogPostRepository.count({
+          where: { author: { id: user.id }, visible: true },
+        }),
+      };
+    } catch (e) {
+      console.log(e);
+      throw new NotFoundException("No Blogs found ");
     }
   }
 
@@ -164,6 +203,7 @@ export class BlogPostService {
         body: {
           type: "blog",
           id: newBlog.id.toString(),
+          slug: newBlog.slug,
           title: newBlog.metaTitle,
           desc: newBlog.metaDescription,
           body: newBlog.markdownContent,
@@ -246,6 +286,7 @@ export class BlogPostService {
         body: {
           type: "blog",
           id: updatedBlog.id.toString(),
+          slug: updatedBlog.slug,
           title: updatedBlog.metaTitle,
           desc: updatedBlog.metaDescription,
           body: updatedBlog.markdownContent,

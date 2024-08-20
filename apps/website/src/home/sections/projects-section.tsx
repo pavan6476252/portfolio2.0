@@ -58,13 +58,13 @@ function ProjectsSection() {
               }`;
             }}
           >
-            <Link to={`/projects/${project.id}`}>
+            <Link to={`/projects/${project.slug}`}>
               <SpeadedRadialGradient className="" />
-              <div className="flex flex-col justify-between h-full">
+              <div className="flex flex-col justify-between  ">
                 <img
                   src={project?.bannerImg || logo}
                   alt=""
-                  className="w-full h-auto "
+                  className="w-full h-auto  aspect-video object-cover"
                 />
                 <div className="flex-1 p-4">
                   <div className="flex flex-col items-start">

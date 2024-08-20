@@ -129,7 +129,7 @@ export default function AdminAbilitiesSection() {
             <CardLayout className="relative">
 
           
-              <img src={logoPath} className="text-indigo-600 flex-1 max-h-40" alt={data.type} />
+              <img src={logoPath} className="text-indigo-600 flex-1 max-h-40  aspect-video object-cover" alt={data.type} />
               <div className="flex flex-col gap-2 w-full">
                 <input
                   value={data.title}

@@ -5,23 +5,24 @@ export interface IProjectResposne {
   metaDescription?: string;
   metaKeywords?: string[];
   metaTitle?: string;
-  markdownContent?:string
+  markdownContent?: string;
   title: string;
-  user?: IUserResponse;
+  author?: IUserResponse;
   projectLink: string;
   bannerImg: string;
   startDate: Date;
   endDate: Date;
   techStack: string[];
   keypoints: string[];
-  isActive: boolean;
+  isActive?: boolean;
+  slug?: string;
 }
 
 export interface ICreateProjectDto {
   metaDescription: string;
   metaKeywords: string[];
   metaTitle: string;
-  markdownContent?:string
+  markdownContent?: string;
   bannerImgFile?: File | null; // Optional file upload
   title: string; // Project title
   projectLink: string; // Link to the project
@@ -36,7 +37,7 @@ export interface IUpdateProjectDto {
   metaDescription: string;
   metaKeywords: string[];
   metaTitle: string;
-  markdownContent?:string
+  markdownContent?: string;
   bannerImgFile?: File | null; // Optional file upload
   bannerImg?: string;
   title?: string; // Project title
@@ -50,4 +51,3 @@ export interface IUpdateProjectDto {
 export interface ICreateProjectResponse {
   id: string;
 }
- 

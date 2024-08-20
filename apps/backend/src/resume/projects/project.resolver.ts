@@ -6,6 +6,7 @@ import { CreateProjectDto } from "./dto/create-project.dto";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
 import { ITokenPayload } from "../../auth/auth.service";
+import { PaginatedProjectResult } from "../../dto/paginated-result.dto";
 
 @Resolver(() => Project)
 export class ProjectResolver {
@@ -28,11 +29,28 @@ export class ProjectResolver {
     return this.projectService.getCurrentUserActiveProjects();
   }
 
+  @Query(() => PaginatedProjectResult, { nullable: true })
+  getActiveProjects(
+    @Context("req") req: any,
+    @Args("limit", { type: () => Int, nullable: true, defaultValue: 10 })
+    limit: number,
+    @Args("offset", { type: () => Int, nullable: true, defaultValue: 0 })
+    offset: number
+  ): Promise<PaginatedProjectResult> {
+    return this.projectService.getActiveProjects(limit, offset);
+  }
+
   @Query(() => Project)
   getProjectById(
     @Args("id", { type: () => Int }) id: number
   ): Promise<Project> {
     return this.projectService.getProjectById(id);
+  }
+  @Query(() => Project)
+  getProjectBySlug(
+    @Args("slug", { type: () => String }) slug: string
+  ): Promise<Project> {
+    return this.projectService.findBySlug(slug);
   }
 
   @Mutation(() => Project)

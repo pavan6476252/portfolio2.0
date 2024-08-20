@@ -11,6 +11,7 @@
         id
         bannerImg
         title
+        slug
         projectLink
         startDate
         endDate

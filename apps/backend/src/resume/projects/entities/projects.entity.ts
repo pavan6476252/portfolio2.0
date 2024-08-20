@@ -62,4 +62,8 @@ export class Project {
   @Field(() => String, { nullable: true })
   @Column({ type: "text", nullable: true })
   markdownContent: string;
+
+  @Field((type) => String, { nullable: true })
+  @Column({nullable:true})
+  slug: string;
 }

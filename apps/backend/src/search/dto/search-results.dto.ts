@@ -11,6 +11,8 @@ export class SearchResult {
   @Field(() => String)
   type: string;
   @Field()
+  slug: string;
+  @Field()
   title: string;
   @Field()
   desc: string;
@@ -25,12 +27,14 @@ export class SearchResult {
     type,
     id,
     title,
+    slug,
     body,
     desc,
     image,
     keywords,
   }: {
     type: "blog" | "project";
+    slug: string;
     id: string;
     title: string;
     desc: string;
@@ -39,6 +43,7 @@ export class SearchResult {
     image: string;
   }) {
     this.id = id;
+    this.slug = slug;
     this.type = type;
     this.title = title;
     this.desc = desc;

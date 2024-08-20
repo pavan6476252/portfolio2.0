@@ -8,6 +8,8 @@ import { User } from "../../auth/user.entity";
 import { CloudinaryService } from "../../upload/cloudinary.service";
 import { IndexNames, SearchService } from "../../search/search.service";
 import { SearchResult } from "../../search/dto/search-results.dto";
+import slugify from "slugify";
+import { PaginatedProjectResult } from "../../dto/paginated-result.dto";
 
 @Injectable()
 export class ProjectService {
@@ -20,6 +22,12 @@ export class ProjectService {
     private searchService: SearchService
   ) {}
 
+  generateUniqueSlug(title: string): string {
+    const baseSlug = slugify(title, { lower: true, strict: true });
+    const timestamp = Date.now();
+    return `${baseSlug}-${timestamp}`;
+  }
+
   async createProject(
     userId: number,
     createProjectDto: CreateProjectDto
@@ -29,16 +37,18 @@ export class ProjectService {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-    const { bannerImgFile } = createProjectDto;
+    const { bannerImgFile, metaTitle } = createProjectDto;
     const { filename, createReadStream } = await bannerImgFile;
     const uploadRes = await this.cloudinaryService.uploadStream(
       createReadStream,
       filename,
       "projects"
     );
+    const uniqueSlug = this.generateUniqueSlug(metaTitle);
 
     const project = this.projectRepository.create({
       ...createProjectDto,
+      slug: uniqueSlug,
       author: user,
       bannerImg: uploadRes.secure_url,
     });
@@ -50,6 +60,7 @@ export class ProjectService {
         body: new SearchResult({
           type: "project",
           id: newProject.id.toString(),
+          slug: newProject.slug,
           title: newProject.title,
           body: newProject.markdownContent,
           desc: newProject.metaDescription,
@@ -77,7 +88,7 @@ export class ProjectService {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
 
-    const { bannerImgFile } = updateProjectDto;
+    const { bannerImgFile, metaTitle } = updateProjectDto;
     if (bannerImgFile) {
       const { filename, createReadStream } = await bannerImgFile;
       const uploadRes = await this.cloudinaryService.uploadStream(
@@ -92,6 +103,10 @@ export class ProjectService {
 
       project.bannerImg = uploadRes.secure_url;
     }
+    if (metaTitle) {
+      const uniqueSlug = this.generateUniqueSlug(metaTitle);
+      project.slug = uniqueSlug;
+    }
 
     const newProject = await this.projectRepository.save(project);
     if (newProject.isActive) {
@@ -100,6 +115,7 @@ export class ProjectService {
         body: new SearchResult({
           type: "project",
           id: newProject.id.toString(),
+          slug: newProject.slug,
           title: newProject.title,
           body: newProject.markdownContent,
           desc: newProject.metaDescription,
@@ -129,6 +145,17 @@ export class ProjectService {
     }
     return project;
   }
+  async findBySlug(slug: string): Promise<Project> {
+    const project = await this.projectRepository.findOne({
+      where: { slug, isActive: true },
+      relations: ["author"],
+    });
+    console.log(project);
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${slug} not found`);
+    }
+    return project;
+  }
 
   async getAllProjects(): Promise<Project[]> {
     return this.projectRepository.find({ relations: ["author"] });
@@ -151,6 +178,35 @@ export class ProjectService {
         where: { author: { id: user.id }, isActive: true },
         relations: ["author"],
       });
+    } catch (e) {
+      console.log(e);
+      throw new NotFoundException("No projects found ");
+    }
+  }
+  async getActiveProjects(
+    limit: number,
+    offset: number
+  ): Promise<PaginatedProjectResult> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { role: "admin" },
+      });
+
+      if (!user) {
+        return { total: 0, result: [] };
+      }
+
+      return {
+        result: await this.projectRepository.find({
+          where: { author: { id: user.id }, isActive: true },
+          relations: ["author","tags"],
+          take: limit,
+          skip: offset,
+        }),
+        total: await this.projectRepository.count({
+          where: { author: { id: user.id }, isActive: true },
+        }),
+      };
     } catch (e) {
       console.log(e);
       throw new NotFoundException("No projects found ");

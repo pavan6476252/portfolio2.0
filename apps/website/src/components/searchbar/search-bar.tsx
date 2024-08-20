@@ -3,7 +3,7 @@ import { FaSearch } from "react-icons/fa";
 import { useSearchBox } from "react-instantsearch";
 import { cn } from "../../utils/tailwind-merge";
 
-const SearchBar: React.FC = () => {
+const SearchBar = ({ setShowResults }: { setShowResults: (show: boolean) => void }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -56,8 +56,14 @@ const SearchBar: React.FC = () => {
         placeholder="Search blogs here"
         type="text"
         onChange={handleChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onFocus={() => {
+          setIsFocused(true);
+          setShowResults(true);
+        }}
+        onBlur={() => {
+          setIsFocused(false);
+          // setTimeout(() => setShowResults(false), 200);  
+        }}
         className="flex-grow bg-transparent text-lg text-black dark:text-white focus:outline-none"
       />
       <span className="bg-purple-500 text-white text-sm px-2 py-1 rounded-sm">

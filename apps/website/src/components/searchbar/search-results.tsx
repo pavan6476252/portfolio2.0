@@ -2,7 +2,11 @@ import React from "react";
 import { Highlight, useHits } from "react-instantsearch";
 import { Link, useNavigate } from "react-router-dom";
 
-const SearchResults: React.FC = () => {
+const SearchResults = ({
+  setShowResults,
+}: {
+  setShowResults: (show: boolean) => void;
+}) => {
   const { items } = useHits();
   // const navigate = useNavigate();
 
@@ -22,8 +26,10 @@ const SearchResults: React.FC = () => {
       {items.length > 0 ? (
         items.map((hit: any) => (
           <Link
+            onBlur={() => setShowResults(false)}
             key={hit.id}
-            to={`/${hit.type}s/${hit.id}`}
+            to={`${hit.type}s/${hit.slug}`}
+            // to={`/${hit.type}s/${hit.id}`}
             className="flex items-center p-2 border-b border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
           >
             <img

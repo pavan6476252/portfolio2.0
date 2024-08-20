@@ -1,21 +1,19 @@
 import React from "react";
-import CardLayout from "../../components/card-layout";
-import SpeadedRadialGradient from "../../components/animation/spreaded-radial-gradient";
 import { gql, useQuery } from "@apollo/client";
+import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/loading-spinner";
-import { Link, useParams } from "react-router-dom";
-import logo from "../../assets/logos/PavanKumarLogo.svg";
+import MarkdownEditor from "@uiw/react-markdown-editor";
+import { IProjectResposne } from "../../dto/project.dto";
 
 const FETCH_CURRENT_PROJECTS = gql`
-  query getPostById($id: Float!) {
-    getProjectById(id: $id) {
+  query getBySlug($slug: String!) {
+    getProjectBySlug(slug: $slug) {
       id
       author {
-        picture
-        username
-        email
         id
-        role
+        picture
+        email
+        username
       }
       bannerImg
       title
@@ -24,143 +22,114 @@ const FETCH_CURRENT_PROJECTS = gql`
       endDate
       techStack
       keypoints
-      desc
-      isActive
+      metaDescription
+      markdownContent
     }
   }
 `;
 
 function ShowSpecificProjectScreen() {
-  const params = useParams<{ id: string }>();
-  const { loading, error, data } = useQuery<{ getProjectById: IProjectResposne }>(
-    FETCH_CURRENT_PROJECTS,
-    {
-      variables: {
-        id: Number(params.id),
-      },
-    }
-  );
-
-  const colors = [
-    "#146ef5",
-    "#ff6b00",
-    "#ed52cb",
-    "#ffae13",
-    "#ee1d36",
-    "#00d722",
-    "#7a3dff",
-  ];
+  const { slug } = useParams<{ slug: string }>();
+  const { loading, error, data } = useQuery<{
+    getProjectBySlug: IProjectResposne;
+  }>(FETCH_CURRENT_PROJECTS, {
+    variables: { slug },
+  });
 
   if (loading) {
     return (
-      <div className="w-full h-2 flex justify-center items-center">
+      <div className="flex justify-center items-center h-screen">
         <LoadingSpinner />
       </div>
     );
   }
+
   if (error || !data) {
-    console.log(error);
-    return null;
+    return (
+      <div className="text-red-500 text-center">Error loading project data</div>
+    );
   }
 
-  const project = data.getProjectById;
+  const project = data.getProjectBySlug;
 
   return (
     <div className="container mx-auto p-6">
-      <div className="bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden">
+      <div className="bg-gray-900 text-white rounded-lg shadow-lg overflow-hidden">
         <img
-          src={data.getProjectById.bannerImg}
-          alt={data.getProjectById.title}
+          src={project.bannerImg}
+          alt={project.title}
           className="w-full h-64 object-cover"
         />
         <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">{data.getProjectById.title}</h1>
-          <p className="text-lg mb-4">{data.getProjectById.desc}</p>
-  
-          <div className="flex items-center mb-4">
+          <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
+          <p className="text-lg mb-6">{project.metaDescription}</p>
+
+          <div className="flex items-center mb-6">
             <img
-              src={data.getProjectById.author.picture}
-              alt={data.getProjectById.author.username}
+              src={project.author?.picture}
+              alt={project.author?.username}
               className="h-12 w-12 rounded-full mr-4"
             />
             <div>
-              <p className="text-sm font-medium">{data.getProjectById.author.username}</p>
-              <p className="text-sm text-gray-400">{data.getProjectById.author.email}</p>
+              <p className="text-lg font-medium">{project.author?.username}</p>
+              <p className="text-sm text-gray-400">{project.author?.email}</p>
             </div>
           </div>
-  
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Project Link:</h3>
-              <a
-                href={data.getProjectById.projectLink}
-                className="text-blue-400 underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {data.getProjectById.projectLink}
-              </a>
-            </div>
+
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold mb-2">Project Link:</h3>
+            <a
+              href={project.projectLink}
+              className="text-blue-500 underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {project.projectLink}
+            </a>
           </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Date:</h3>
-              <p>
-                {new Date(data.getProjectById.startDate).toLocaleDateString()} -{" "}
-                {new Date(data.getProjectById.endDate).toLocaleDateString()}
-              </p>
-            </div>
-  <br />
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Tech Stack:</h3>
-            <div className="flex flex-wrap">
-              {data.getProjectById.techStack.map((tech, idx) => (
+
+          <div className="mt-4">
+            {/* <div className="prose dark:prose-dark mt-2"> */}
+            <MarkdownEditor.Markdown
+              source={data?.getProjectBySlug?.markdownContent}
+              className="p-2"
+            />
+            {/* </div> */}
+          </div>
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold mb-2">Project Duration:</h3>
+            <p>
+              {new Date(project.startDate).toLocaleDateString()} -{" "}
+              {new Date(project.endDate).toLocaleDateString()}
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold mb-2">Tech Stack:</h3>
+            <div className="flex flex-wrap gap-2">
+              {project.techStack.map((tech, idx) => (
                 <span
                   key={idx}
-                  className="bg-gray-700 text-white px-3 py-1 rounded-full mr-2 mb-2"
+                  className="bg-blue-700 text-white px-4 py-1 rounded-full"
                 >
                   {tech}
                 </span>
               ))}
             </div>
           </div>
-  
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Key Points:</h3>
+
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold mb-2">Key Points:</h3>
             <ul className="list-disc list-inside">
-              {data.getProjectById.keypoints.map((point, idx) => (
+              {project.keypoints.map((point, idx) => (
                 <li key={idx}>{point}</li>
               ))}
             </ul>
           </div>
-  
-           
         </div>
       </div>
     </div>
   );
-  
 }
 
 export default ShowSpecificProjectScreen;
-
-interface IProjectResposne {
-  id: string;
-  title: string;
-  author: IUser;
-  projectLink: string;
-  bannerImg: string;
-  startDate: Date;
-  endDate: Date;
-  techStack: string[];
-  desc: string;
-  keypoints: string[];
-  isActive: boolean;
-}
-
-interface IUser {
-  username: string;
-  picture?: string;
-  email: string;
-  id: number;
-  role: string;
-}

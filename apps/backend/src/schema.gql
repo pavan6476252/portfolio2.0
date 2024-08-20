@@ -105,6 +105,7 @@ type Project {
   metaDescription: String
   metaKeywords: [String!]
   markdownContent: String
+  slug: String
 }
 
 type Education {
@@ -148,9 +149,20 @@ type BlogPostsResponse {
   total: Int!
 }
 
+type PaginatedBlogPostResult {
+  total: Int!
+  result: [BlogPost!]!
+}
+
+type PaginatedProjectResult {
+  total: Int!
+  result: [Project!]!
+}
+
 type SearchResult {
   id: ID!
   type: String!
+  slug: String!
   title: String!
   desc: String!
   body: String!
@@ -169,14 +181,18 @@ type Query {
   getAllProjects: [Project!]!
   getMyProjects: [Project!]!
   getCurrentUserActiveProjects: [Project!]
+  getActiveProjects(limit: Int = 10, offset: Int = 0): PaginatedProjectResult
   getProjectById(id: Int!): Project!
+  getProjectBySlug(slug: String!): Project!
   educations: [Education!]!
   education(id: Int!): Education!
   myEducations(id: Int!): [Education!]!
   search(query: String!, indexName: String!): [SearchResult!]!
   getAllBlogs(limit: Float!, offset: Float!, filter: FilterInput!): BlogPostsResponse!
   getBlog(id: Int!): BlogPost!
+  getBlogBySlug(slug: String!): BlogPost!
   getCurrentUserActiveBlogs: [BlogPost!]
+  getActiveBlogs(limit: Int = 10, offset: Int = 0): PaginatedBlogPostResult
 }
 
 input FilterInput {
