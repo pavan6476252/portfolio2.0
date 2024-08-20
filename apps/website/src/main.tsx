@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import store from "./store/store";
 import { ApolloProvider } from "@apollo/client";
 import { apolloClient } from "./store/api/apolloApiClient";
+import { HelmetProvider } from "react-helmet-async";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -14,10 +15,11 @@ const root = ReactDOM.createRoot(
 root.render(
   // <StrictMode>
   <ApolloProvider client={apolloClient}>
-
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </HelmetProvider>
   </ApolloProvider>
   // </StrictMode>
 );

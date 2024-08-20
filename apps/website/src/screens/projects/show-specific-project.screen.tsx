@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/loading-spinner";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import { IProjectResposne } from "../../dto/project.dto";
+import SEO from "../../components/seo";
 
 const FETCH_CURRENT_PROJECTS = gql`
   query getBySlug($slug: String!) {
@@ -53,6 +54,16 @@ function ShowSpecificProjectScreen() {
   const project = data.getProjectBySlug;
 
   return (
+    <>
+      <SEO
+        {...{
+          description: data?.getProjectBySlug.metaDescription??"",
+          keywords: data?.getProjectBySlug.metaKeywords??[],
+          creatorName: data?.getProjectBySlug.author?.username ?? "",
+          title: data?.getProjectBySlug.metaTitle??"",
+          type: "",
+        }}
+      />
     <div className="container mx-auto p-6">
       <div className="bg-gray-900 text-white rounded-lg shadow-lg overflow-hidden">
         <img
@@ -129,6 +140,8 @@ function ShowSpecificProjectScreen() {
         </div>
       </div>
     </div>
+    </>
+
   );
 }
 
