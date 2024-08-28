@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CloudinaryService } from "./cloudinary.service";
-
+import 'multer';
 @Controller("upload")
 export class cloudinaryController {
   constructor(private readonly uploadService: CloudinaryService) {}

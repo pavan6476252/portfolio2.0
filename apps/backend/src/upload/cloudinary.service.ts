@@ -2,6 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { v2, UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import { Readable } from "stream";
 import { v4 as uuidv4 } from "uuid";
+import "multer";
 
 function generateUniqueFilename(
   filename: string
