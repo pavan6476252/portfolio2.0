@@ -1,7 +1,5 @@
 
-# Event Management System Backend
-
-This repository contains the backend for the Event Management System, built using NestJS, TypeORM, Apollo GraphQL, and PostgreSQL. The backend handles various features, including user authentication, event management, education details, and more.
+# Portfolio 2.0
 
 ## Table of Contents
 
@@ -16,7 +14,6 @@ This repository contains the backend for the Event Management System, built usin
 ## Features
 
 - User Authentication (Google Sign-In, Role-based access)
-- Event Management (Create, update, and manage events)
 - Education Management (Add, update, and manage user education details)
 - Project Management (Create and manage projects)
 - Blogging System (Create, edit, and manage blog posts)
@@ -48,16 +45,14 @@ This repository contains the backend for the Event Management System, built usin
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/event-management-backend.git
-   cd event-management-backend
+   git clone https://github.com/pavan6476252/portfolio2.0.git
+ 
    ```
 
 2. Install the dependencies:
 
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
 3. Set up the environment variables:
