@@ -34,7 +34,7 @@ function BlogSection() {
          } relative min-w-[400px] text-white w-[400px] aspect-[7/9] transition duration-300 my-auto flex flex-col`}
         
        >
-         <Link to={`/blogs/${blog.id}`}>
+         <Link to={`/blogs/${blog.slug}`}>
            <SpeadedRadialGradient className="" />
            <div className="flex flex-col justify-between h-full">
              <img
