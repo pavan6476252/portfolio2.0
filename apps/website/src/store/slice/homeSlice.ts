@@ -46,6 +46,7 @@ const GET_PROFILE_QUERY = gql`
       title
       metaTitle
       metaDescription
+      slug
       bannerImg
       projectLink
       startDate
