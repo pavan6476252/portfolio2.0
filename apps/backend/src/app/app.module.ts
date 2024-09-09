@@ -28,6 +28,10 @@ import { DateScalar } from "../common/date.scalar";
 import { Education } from "../resume/education/entities/education.entity";
 import { SearchModule } from "../search/search.module";
 
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -62,6 +66,7 @@ import { SearchModule } from "../search/search.module";
     EmailModule,
     SearchModule,
   ],
-  providers: [DateScalar],
+  controllers: [AppController], 
+  providers: [AppService,DateScalar],
 })
 export class AppModule {}
