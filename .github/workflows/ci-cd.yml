@@ -46,7 +46,7 @@ jobs:
       - name: Build and push Docker image for ${{ matrix.project }}
         uses: docker/build-push-action@v5
         with:
-          context: ./apps/${{ matrix.project }}
+          context: .
           file: ./apps/${{ matrix.project }}/Dockerfile   
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.project }}:latest

@@ -2,8 +2,7 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-COPY ../../package*.json ./
-
+COPY package*.json ./
 
 RUN npm install
 
