@@ -1,14 +1,19 @@
-
-FROM node:20-alpine AS build
+from node:20-alpine  as build
 
 WORKDIR /app
 
-COPY ./apps/project1 .
+COPY package*.json ./
 
-RUN npm install && npm run build
- 
-FROM node:20-alpine
+RUN npm install
 
-COPY --from=build /app/dist /app
+COPY . .
+
+RUN npx nx build backend
+
+FROM node:20-alpine 
+
+COPY --from=build /app/dist/apps/backend /app
+
+EXPOSE 80
 
 CMD ["node", "/app/main.js"]

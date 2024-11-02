@@ -1,14 +1,20 @@
 
 FROM node:20-alpine AS build
-
-WORKDIR /app
-
-COPY ./apps/project1 .
-
-RUN npm install && npm run build
  
-FROM node:20-alpine
-
-COPY --from=build /app/dist /app
-
-CMD ["node", "/app/main.js"]
+WORKDIR /app
+ 
+COPY package*.json ./
+ 
+RUN npm install
+ 
+COPY . .
+ 
+RUN npx nx run build website
+ 
+FROM nginx:alpine
+ 
+COPY --from=build /app/dist/apps/website /usr/share/nginx/html
+ 
+EXPOSE 80
+ 
+CMD ["nginx", "-g", "daemon off;"]
